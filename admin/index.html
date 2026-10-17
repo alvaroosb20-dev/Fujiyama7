@@ -75,7 +75,6 @@
         <button class="is-active" data-tab="gallery" role="tab">Galería</button>
         <button data-tab="carta" role="tab">Carta</button>
         <button data-tab="settings" role="tab">Datos del restaurante</button>
-        <button data-tab="messages" role="tab">Mensajes <span class="a-badge" id="msg-badge" hidden></span></button>
       </nav>
 
       <!-- GALERÍA -->
@@ -131,9 +130,9 @@
             <div class="field"><label>Frase de presentación</label><input name="heroText" maxlength="200"></div>
           </div>
 
-          <h2 class="a-h2">Sobre nosotros</h2>
+          <h2 class="a-h2">Quiénes somos</h2>
           <div class="form-grid">
-            <div class="field"><label>Título</label><input name="aboutTitle" maxlength="80" placeholder="Sobre Fujiyama"></div>
+            <div class="field"><label>Título</label><input name="aboutTitle" maxlength="80" placeholder="Quiénes somos"></div>
             <div class="field"><label>Texto (deja una línea en blanco entre párrafos)</label><textarea name="aboutText" rows="7" maxlength="4000" placeholder="Si lo dejas vacío, la web muestra un texto provisional marcado como tal."></textarea></div>
             <div class="field"><label>Foto de la sección</label>
               <div class="a-row"><img id="about-prev" class="a-thumb" alt="" hidden><input type="file" id="about-file" accept="image/*"><button type="button" class="btn btn--sm" id="about-clear" hidden>Quitar</button></div>
@@ -143,11 +142,9 @@
 
           <h2 class="a-h2">Contacto general</h2>
           <div class="form-grid form-grid--2">
-            <div class="field"><label>Teléfono de reservas (opcional si cada local tiene el suyo)</label><input name="phone" maxlength="40" placeholder="922 000 000"></div>
+            <div class="field"><label>Teléfono</label><input name="phone" maxlength="40" placeholder="922 000 000"></div>
             <div class="field"><label>WhatsApp (si lo tenéis)</label><input name="whatsapp" maxlength="40" placeholder="600 000 000"></div>
             <div class="field"><label>Email público</label><input name="email" type="email" maxlength="120"></div>
-            <div class="field"><label>Email para avisos de formularios</label><input name="notifyEmail" type="email" maxlength="120" placeholder="Recibe cada reserva/consulta por email"></div>
-            <div class="field" style="grid-column:1/-1"><label>Enlace a sistema de reservas externo (opcional)</label><input name="reservationUrl" type="url" maxlength="300" placeholder="https://… (CoverManager, TheFork, etc.)"></div>
           </div>
 
           <h2 class="a-h2">Restaurantes</h2>
@@ -179,21 +176,6 @@
         </form>
       </div>
 
-      <!-- MENSAJES -->
-      <div class="a-panel" data-panel="messages">
-        <div class="a-card">
-          <div class="a-row a-row--between">
-            <h2 class="a-h2">Reservas y consultas</h2>
-            <div class="a-row">
-              <select id="m-filter" class="a-select">
-                <option value="all">Todos</option><option value="reserva">Reservas</option><option value="consulta">Consultas</option><option value="nuevo">Sin ver</option>
-              </select>
-              <button class="btn btn--sm" id="m-refresh">Actualizar</button>
-            </div>
-          </div>
-          <div id="m-list"></div>
-        </div>
-      </div>
     </section>
   </main>
 

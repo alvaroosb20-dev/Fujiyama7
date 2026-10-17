@@ -1,4 +1,4 @@
-import { isConfigured, sb, loadSettings, loadCarta, loadGallery, price, esc, telHref, waHref, mainPhone } from "./core.js";
+import { loadSettings, loadCarta, loadGallery, price, esc, telHref, waHref, mainPhone } from "./core.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -43,13 +43,6 @@ const observeReveals = (root = document) => $$(".reveal:not(.is-in)", root).forE
 observeReveals();
 
 $("#year").textContent = new Date().getFullYear();
-
-/* Botones "Reservar": llevan al formulario con la pestaña de reserva */
-document.addEventListener("click", e => {
-  const r = e.target.closest("[data-reserve]");
-  if (!r) return;
-  setKind("reserva");
-});
 
 /* ------------------------------------------------------------------ */
 /* Visor (lightbox) reutilizable                                       */
@@ -280,6 +273,7 @@ $("#gallery").addEventListener("click", e => {
 /* ------------------------------------------------------------------ */
 /* Datos del restaurante                                               */
 /* ------------------------------------------------------------------ */
+const fmtPhone = p => { const d = String(p).replace(/\D/g, ""); return d.length === 9 ? d.replace(/(\d{3})(\d{2})(\d{2})(\d{2})/, "$1 $2 $3 $4") : p; };
 const pend = label => `<span class="pending">${esc(label)} pendiente de configurar</span>`;
 
 function applySettings(s) {
@@ -300,22 +294,17 @@ function applySettings(s) {
   const phone = mainPhone(s);
   const mapsUrl = l => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.mapsQuery || l.address)}`;
   const blocks = [];
-  if (s.phone || !s.locations.some(l => l.phone)) {
-    blocks.push(info("i-phone", "Teléfono de reservas", s.phone
-      ? `<p><a href="${telHref(s.phone)}">${esc(s.phone)}</a></p><div class="info__actions"><a class="btn btn--sm btn--red" href="${telHref(s.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>${s.whatsapp ? `<a class="btn btn--sm" href="${waHref(s.whatsapp, "Hola Fujiyama, quería hacer una reserva.")}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}</div>`
-      : `<p>${pend("Teléfono")}</p>`));
-  }
   s.locations.forEach((l, i) => {
     const body = `
       <p>${l.address ? esc(l.address) : pend("Dirección")}</p>
-      ${l.phone ? `<p style="margin-top:4px"><a href="${telHref(l.phone)}">${esc(l.phone)}</a></p>` : ""}
+      ${l.phone ? `<p style="margin-top:4px"><a href="${telHref(l.phone)}">${esc(fmtPhone(l.phone))}</a></p>` : ""}
       ${l.hours.length
-        ? `<table class="hours" style="margin-top:10px">${l.hours.map(h => `<tr${/cerrado/i.test(h.hours) ? ' class="is-closed"' : ""}><td>${esc(h.days)}</td><td>${esc(h.hours)}</td></tr>`).join("")}</table>`
+        ? `<table class="hours" style="margin-top:10px">${l.hours.map(h => `<tr${/cerrado/i.test(h.hours) ? ' class="is-closed"' : ""}><td>${esc(h.days)}</td><td>${esc(h.hours).replace(/\s*·\s*/g, "<br>")}</td></tr>`).join("")}</table>`
         : `<p style="margin-top:8px">${pend("Horario")}</p>`}
       ${l.hoursNote ? `<p style="font-size:14px;color:var(--muted);margin-top:8px">${esc(l.hoursNote)}</p>` : ""}
       <div class="info__actions">
         ${l.phone ? `<a class="btn btn--sm btn--red" href="${telHref(l.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>` : ""}
-        ${l.whatsapp ? `<a class="btn btn--sm" href="${waHref(l.whatsapp, `Hola Fujiyama ${l.name}, quería hacer una reserva.`)}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}
+        ${l.whatsapp ? `<a class="btn btn--sm" href="${waHref(l.whatsapp, `Hola Fujiyama ${l.name}`)}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}
         ${l.address ? `<a class="btn btn--sm" target="_blank" rel="noopener" href="${mapsUrl(l)}">Cómo llegar</a><button class="btn btn--sm" type="button" data-map="${i}"><svg><use href="#i-pin"/></svg>Ver mapa</button>` : ""}
       </div>`;
     blocks.push(info("i-pin", "Fujiyama " + esc(l.name), body));
@@ -343,26 +332,16 @@ function applySettings(s) {
   // Locales en la portada
   $("#hero-locs").innerHTML = s.locations.map(l => `<span>${esc(l.name)}</span>`).join("");
 
-  // Selector de restaurante en el formulario
-  const sel = $("#f-loc");
-  sel.innerHTML = `<option value="">Elige restaurante</option>` + s.locations.map(l => `<option>${esc(l.name)}</option>`).join("");
-  if (s.locations.length === 1) sel.value = s.locations[0].name;
-  $("#f-loc-field").hidden = s.locations.length < 2;
-
-  // Botones de llamada
-  $$("[data-phone-btn]").forEach(a => { if (phone) { a.hidden = false; a.href = telHref(phone); } });
+  // Teléfono e Instagram
+  $$("[data-phone-link]").forEach(a => { if (phone) a.href = telHref(phone); else a.hidden = true; });
+  $$(".call-card__num").forEach(a => a.textContent = phone ? fmtPhone(phone) : "");
+  $$(".header__cta[data-phone-link], .mobile-menu [data-phone-link]").forEach(a => { if (phone) a.lastChild.textContent = "Llamar · " + fmtPhone(phone); });
+  $$("[data-ig-link]").forEach(a => { if (s.social.instagram) a.href = s.social.instagram; else a.hidden = true; });
   document.body.classList.add("has-dock");
-
-  // Reserva externa
-  if (s.reservationUrl) {
-    const ext = $("#res-external");
-    ext.hidden = false;
-    ext.innerHTML = `<a class="btn btn--red" style="width:100%" href="${esc(s.reservationUrl)}" target="_blank" rel="noopener"><svg><use href="#i-cal"/></svg>Reservar online</a><p class="form-note" style="margin-top:10px">O envíanos una solicitud con el formulario.</p>`;
-  }
 
   // Pie
   const fc = [];
-  fc.push(phone ? `<p><a href="${telHref(phone)}">${esc(phone)}</a></p>` : `<p>${pend("Teléfono")}</p>`);
+  fc.push(phone ? `<p><a href="${telHref(phone)}">${esc(fmtPhone(phone))}</a></p>` : `<p>${pend("Teléfono")}</p>`);
   if (s.email) fc.push(`<p><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></p>`);
   s.locations.forEach(l => fc.push(`<p><strong>${esc(l.name)}</strong><br>${l.address ? esc(l.address) : pend("Dirección")}</p>`));
   $("#footer-contact").innerHTML = fc.join("");
@@ -381,7 +360,7 @@ function applySettings(s) {
     const graph = s.locations.map(l => ({
       "@type": "Restaurant", name: `Fujiyama ${l.name} · Cocina japonesa`, servesCuisine: ["Japonesa", "Sushi"],
       url: base + "/", image: base + "/assets/img/og-fujiyama.jpg", logo: base + "/assets/img/logo-fujiyama.jpg",
-      hasMenu: base + "/#carta", acceptsReservations: true, priceRange: "€€",
+      hasMenu: base + "/#carta", priceRange: "€€",
       ...(l.phone || s.phone ? { telephone: l.phone || s.phone } : {}),
       ...(s.email ? { email: s.email } : {}),
       ...(l.address ? { address: { "@type": "PostalAddress", streetAddress: l.address, addressRegion: "Santa Cruz de Tenerife", addressCountry: "ES" } } : {}),
@@ -390,91 +369,8 @@ function applySettings(s) {
     $("#ld-restaurant").textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
   } catch {}
 
-  configureForm(s);
 }
 const info = (icon, title, body) => `<div class="info"><span class="info__ico"><svg><use href="#${icon}"/></svg></span><div><h3>${title}</h3>${body}</div></div>`;
-
-/* ------------------------------------------------------------------ */
-/* Formulario de reserva / consulta                                    */
-/* ------------------------------------------------------------------ */
-const form = $("#contact-form");
-const status = $("#form-status");
-let formSettings = null;
-
-function setKind(kind) {
-  form.kind.value = kind;
-  $$(".tabs button").forEach(b => { const on = b.dataset.kind === kind; b.classList.toggle("is-active", on); b.setAttribute("aria-selected", String(on)); });
-  $("#res-fields").hidden = kind !== "reserva";
-  $("#f-msg-label").textContent = kind === "reserva" ? "Comentarios" : "Mensaje";
-  $("#f-submit").textContent = kind === "reserva" ? "Enviar solicitud de reserva" : "Enviar consulta";
-}
-$$(".tabs button").forEach(b => b.addEventListener("click", () => setKind(b.dataset.kind)));
-setKind("reserva");
-$("#f-date").min = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-
-function configureForm(s) {
-  formSettings = s;
-  const ph = mainPhone(s);
-  if (!isConfigured() && !s.notifyEmail) {
-    $("#f-submit").disabled = true;
-    showStatus(`<strong>Formulario pendiente de configuración.</strong> Para recibir reservas y consultas hay que conectar Supabase o indicar un email de avisos (ver README).${ph ? ` Mientras tanto, llámanos al <a href="${telHref(ph)}">${esc(ph)}</a>.` : ""}`);
-  }
-}
-function showStatus(html, ok = false) {
-  status.innerHTML = html; status.classList.add("is-show"); status.classList.toggle("is-ok", ok);
-}
-
-form.addEventListener("submit", async e => {
-  e.preventDefault();
-  if (form.website.value) return; // trampa anti-spam
-  const d = Object.fromEntries(new FormData(form));
-  const kind = d.kind;
-  const errors = [];
-  if (!d.name || d.name.trim().length < 2) errors.push("tu nombre");
-  if (!d.phone?.trim() && !d.email?.trim()) errors.push("un teléfono o un email");
-  if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) errors.push("un email válido");
-  if (formSettings && formSettings.locations.length > 1 && !d.location) errors.push("el restaurante");
-  if (kind === "reserva") {
-    if (!d.res_date) errors.push("la fecha");
-    if (!d.res_time) errors.push("la hora");
-    if (!d.people || +d.people < 1) errors.push("el número de personas");
-  } else if (!d.message?.trim()) errors.push("tu mensaje");
-  if (!form.privacy.checked) errors.push("aceptar la política de privacidad");
-  if (errors.length) return showStatus("Revisa: " + errors.join(", ") + ".");
-
-  const btn = $("#f-submit"); btn.disabled = true; const label = btn.textContent; btn.textContent = "Enviando…";
-  const row = {
-    kind, location: d.location || null, name: d.name.trim(), email: d.email?.trim() || null, phone: d.phone?.trim() || null, message: d.message?.trim() || null,
-    res_date: kind === "reserva" ? d.res_date : null, res_time: kind === "reserva" ? d.res_time : null, people: kind === "reserva" ? +d.people : null
-  };
-  try {
-    let saved = false;
-    const c = await sb();
-    if (c) {
-      const { error } = await c.from("messages").insert(row);
-      if (error) throw error;
-      saved = true;
-    }
-    if (formSettings?.notifyEmail) {
-      const r = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(formSettings.notifyEmail)}`, {
-        method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({
-          _subject: kind === "reserva" ? `Reserva ${row.location || ""} · ${row.name} · ${row.res_date} ${row.res_time} · ${row.people} pers.` : `Consulta web ${row.location || ""} · ${row.name}`,
-          _template: "table", Tipo: kind, Restaurante: row.location || "-", Nombre: row.name, Telefono: row.phone || "-", Email: row.email || "-",
-          Fecha: row.res_date || "-", Hora: row.res_time || "-", Personas: row.people || "-", Mensaje: row.message || "-"
-        })
-      });
-      if (!r.ok && !saved) throw new Error("No se pudo enviar el aviso por email");
-    }
-    form.reset(); setKind(kind); if (formSettings.locations.length === 1) $("#f-loc").value = formSettings.locations[0].name;
-    showStatus(kind === "reserva"
-      ? "<strong>¡Solicitud enviada!</strong> Tu reserva aún no está confirmada: el restaurante te contactará para confirmarla."
-      : "<strong>¡Mensaje enviado!</strong> Te responderemos lo antes posible.", true);
-  } catch (err) {
-    console.error(err);
-    showStatus("No se ha podido enviar ahora mismo. Inténtalo de nuevo en unos minutos" + (formSettings && mainPhone(formSettings) ? ` o llámanos al <a href="${telHref(mainPhone(formSettings))}">${esc(mainPhone(formSettings))}</a>` : "") + ".");
-  } finally { btn.disabled = false; btn.textContent = label; }
-});
 
 /* ------------------------------------------------------------------ */
 /* Arranque                                                            */

@@ -1,4 +1,4 @@
-import { isConfigured, sb, BUCKET, publicUrl, mergeSettings, price, esc, telHref, waHref } from "./core.js";
+import { isConfigured, sb, BUCKET, publicUrl, mergeSettings, price, esc } from "./core.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -187,14 +187,13 @@ async function enter() {
     return;
   }
   show("v-app"); $("#logout").hidden = false;
-  loadGalleryAdmin(); loadCartaAdmin(); loadSettingsAdmin(); loadMessages();
+  loadGalleryAdmin(); loadCartaAdmin(); loadSettingsAdmin();
 }
 
 /* Pestañas */
 $$(".a-tabs button").forEach(b => b.addEventListener("click", () => {
   $$(".a-tabs button").forEach(x => x.classList.toggle("is-active", x === b));
   $$(".a-panel").forEach(p => p.classList.toggle("is-active", p.dataset.panel === b.dataset.tab));
-  if (b.dataset.tab === "messages") loadMessages();
 }));
 
 /* ================================================================== */
@@ -652,60 +651,6 @@ $("#settings-form").addEventListener("submit", async e => {
   settingsData = data;
   setStatus(st, "Guardado. Los cambios ya están en la web.", true);
   setTimeout(() => setStatus(st, ""), 4000);
-});
-
-/* ================================================================== */
-/* MENSAJES                                                            */
-/* ================================================================== */
-let msgs = [];
-async function loadMessages() {
-  const r = await client.from("messages").select("*").order("created_at", { ascending: false }).limit(300);
-  if (r.error) return toast("Error cargando mensajes: " + r.error.message, true);
-  msgs = r.data; renderMessages();
-}
-function renderMessages() {
-  const nuevos = msgs.filter(m => m.status === "nuevo").length;
-  $("#msg-badge").hidden = !nuevos; $("#msg-badge").textContent = nuevos;
-  const f = $("#m-filter").value;
-  const list = msgs.filter(m => f === "all" || m.kind === f || m.status === f);
-  $("#m-list").innerHTML = list.length ? list.map(m => `
-    <article class="a-msg${m.status === "nuevo" ? " is-new" : ""}" data-m="${m.id}">
-      <div class="a-msg__head">
-        <span class="a-tag${m.kind === "reserva" ? " a-tag--res" : ""}">${m.kind}</span>
-        ${m.location ? `<span class="a-tag">${esc(m.location)}</span>` : ""}
-        <b>${esc(m.name)}</b>
-        <span class="a-muted a-small">${new Date(m.created_at).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" })}</span>
-      </div>
-      ${m.kind === "reserva" ? `<div class="a-msg__res">${m.res_date ? new Date(m.res_date + "T12:00").toLocaleDateString("es-ES", { weekday: "long", day: "numeric", month: "long" }) : "—"} · ${esc(m.res_time || "—")} · ${m.people || "—"} pers.</div>` : ""}
-      <div class="a-row a-small">
-        ${m.phone ? `<a href="${telHref(m.phone)}">${esc(m.phone)}</a> · <a href="${waHref(m.phone)}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
-        ${m.email ? `${m.phone ? " · " : ""}<a href="mailto:${esc(m.email)}">${esc(m.email)}</a>` : ""}
-      </div>
-      ${m.message ? `<p>${esc(m.message)}</p>` : ""}
-      <div class="a-row">
-        <select class="a-select" data-status aria-label="Estado">
-          ${["nuevo", "visto", "confirmado", "descartado"].map(s => `<option value="${s}" ${s === m.status ? "selected" : ""}>${s[0].toUpperCase() + s.slice(1)}</option>`).join("")}
-        </select>
-        <button class="a-ib a-ib--red" data-mdel>Eliminar</button>
-      </div>
-    </article>`).join("") : `<div class="a-empty" style="margin-top:12px">No hay mensajes${f !== "all" ? " con este filtro" : ""}.</div>`;
-}
-$("#m-filter").addEventListener("change", renderMessages);
-$("#m-refresh").addEventListener("click", loadMessages);
-$("#m-list").addEventListener("change", async e => {
-  if (!e.target.matches("[data-status]")) return;
-  const m = msgs.find(x => x.id === e.target.closest("[data-m]").dataset.m);
-  const r = await client.from("messages").update({ status: e.target.value }).eq("id", m.id);
-  if (r.error) return toast(r.error.message, true);
-  m.status = e.target.value; renderMessages(); toast("Estado actualizado");
-});
-$("#m-list").addEventListener("click", async e => {
-  if (!e.target.closest("[data-mdel]")) return;
-  const m = msgs.find(x => x.id === e.target.closest("[data-m]").dataset.m);
-  if (!confirm(`¿Eliminar el mensaje de ${m.name}?`)) return;
-  const r = await client.from("messages").delete().eq("id", m.id);
-  if (r.error) return toast(r.error.message, true);
-  msgs = msgs.filter(x => x !== m); renderMessages(); toast("Mensaje eliminado");
 });
 
 start();

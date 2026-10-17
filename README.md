@@ -1,10 +1,10 @@
 # Fujiyama · Cocina japonesa — Web
 
-Web del restaurante con carta digital, galería de fotos y vídeos gestionable, formulario de reservas y panel privado de administración.
+Web de los restaurantes Fujiyama (Santa Cruz y La Laguna) con carta digital, galería de fotos y vídeos gestionable, «Quiénes somos», ubicación de los dos locales y panel privado de administración.
 
 - **Web pública:** HTML + CSS + JavaScript, sin paso de compilación. Se publica tal cual en Vercel, Netlify o cualquier hosting estático.
 - **Contenido dinámico:** [Supabase](https://supabase.com) (base de datos, almacenamiento de fotos/vídeos y login del panel). Plan gratuito suficiente para empezar.
-- **Panel privado:** `/admin/` — galería, carta, datos del restaurante y mensajes/reservas. Los cambios se ven en la web al instante, sin volver a publicar.
+- **Panel privado:** `/admin/` — galería, carta y datos del restaurante. Los cambios se ven en la web al instante, sin volver a publicar.
 
 ---
 
@@ -35,7 +35,7 @@ Ya está creado el proyecto **fujiyama** en tu cuenta de Supabase y su URL y cla
 3. **Crear tu acceso:** entra en `https://TU-DOMINIO/admin/`. Mientras no exista ningún administrador aparece **«Crear cuenta de administrador»**: pon tu email y contraseña, confirma el email que te llega y entra. Esa primera cuenta queda como administradora y la opción desaparece. Hazlo nada más publicar la web.
    - Alternativa manual: crear el usuario en *Authentication → Users* y ejecutar `supabase/03_crear_admin.sql` con tu email.
 
-> La clave *anon* de `config.js` es pública por diseño. Lo que protege los datos son las políticas RLS de `01_schema.sql`: cualquiera puede **leer** la carta, la galería publicada y los datos del restaurante, y **enviar** un formulario; solo los administradores pueden **leer mensajes, subir, editar o borrar**. Nunca pongas la clave *service_role* en la web.
+> La clave *anon* de `config.js` es pública por diseño. Lo que protege los datos son las políticas RLS de `01_schema.sql`: cualquiera puede **leer** la carta, la galería publicada y los datos del restaurante; solo los administradores pueden **subir, editar o borrar**. Nunca pongas la clave *service_role* en la web.
 
 Si la base de datos no está preparada, la web sigue funcionando con la carta y las fotos por defecto, y el panel avisa de que falta ejecutar el esquema (no simula subidas).
 
@@ -63,30 +63,22 @@ Si la base de datos no está preparada, la web sigue funcionando con la carta y 
 - Una sección sin productos pero con nota se muestra como aviso.
 - Si cambias la carta en papel, actualiza también las imágenes de `assets/carta/` y el PDF (botones «Ver carta original» y «Descargar carta»).
 
-**Datos del restaurante**: título y frase de portada, texto y foto de *Sobre nosotros*, contacto general (teléfono, WhatsApp, emails), **restaurantes** (Santa Cruz y La Laguna: nombre, dirección, teléfono, WhatsApp, horario por días —escribe «Cerrado» el día de descanso— y nota), enlace a un sistema de reservas externo, redes sociales y datos legales. Lo que se deja vacío aparece en la web como «pendiente de configurar» o no se muestra (redes sociales, WhatsApp).
+**Datos del restaurante**: título y frase de portada, texto y foto de *Quiénes somos*, contacto general (teléfono, WhatsApp, email), **restaurantes** (Santa Cruz y La Laguna: nombre, dirección, teléfono, WhatsApp, horario por días —escribe «Cerrado» el día de descanso— y nota), redes sociales y datos legales. Lo que se deja vacío aparece en la web como «pendiente de configurar» o no se muestra (redes sociales, WhatsApp).
 
-**Mensajes**: solicitudes de reserva y consultas (indican el restaurante elegido), con llamada/WhatsApp directo y estado (nuevo, visto, confirmado, descartado). La web avisa al cliente de que su reserva **no está confirmada** hasta que el restaurante le contacte.
+## 5. Contacto
 
-## 5. Avisos por email (opcional)
+La web no tiene sistema de reservas ni formularios: muestra el teléfono (922 28 77 55) con botón de llamada, Instagram, las direcciones con «Cómo llegar» y el mapa de cada local. Todo se cambia desde *Datos del restaurante*.
 
-Si rellenas *Email para avisos de formularios*, cada envío llega también por correo mediante **FormSubmit** (gratuito). La **primera vez** FormSubmit envía un email de activación a esa dirección: hay que pulsar el enlace; hasta entonces no se reciben avisos (los mensajes sí quedan guardados en el panel).
-
-## 6. Reservas
-
-Hay dos opciones y pueden convivir:
-- **Formulario propio** (activo al conectar Supabase): el cliente envía fecha, hora y personas; el restaurante confirma por teléfono/WhatsApp desde el panel.
-- **Sistema externo** (CoverManager, TheFork, etc.): pega el enlace en *Datos del restaurante* y aparece el botón «Reservar online».
-
-## 7. Pendiente de completar
+## 6. Pendiente de completar
 
 - **Verificar en la carta**: precios de los uramakis 55–57 (en la captura los precios están desalineados; se ha leído 55 = 8,00 €, 56 = 10,00 €, 57 = 8,00 €) y el precio del nº 15 Usuzukuri carabinero, que no aparece en la captura (se muestra sin precio).
-- Teléfonos (general o de cada restaurante), WhatsApp, email y redes sociales. Direcciones y horarios de Santa Cruz y La Laguna ya están puestos.
-- Texto y foto de *Sobre nosotros* (ahora hay un texto provisional marcado como tal).
+- (Opcional) teléfono propio de cada local, WhatsApp, email y otras redes. Teléfono general, Instagram, direcciones y horarios ya están puestos.
+- Revisar el texto de *Quiénes somos* (redactado solo con datos de la carta y los locales; se edita desde el panel).
 - Datos legales (titular, NIF, domicilio) y revisión de los textos legales.
 - Iconos de alérgenos por plato: en la carta original aparecen junto a cada plato, pero son demasiado pequeños en la captura para leerlos con seguridad, por eso no se han transcrito. La web muestra la declaración general de alérgenos.
 - Más fotos y vídeos propios desde el panel (ahora hay 3 fotos iniciales).
 
-## 8. Notas técnicas
+## 7. Notas técnicas
 
 - Tipografías: Shippori Mincho B1 (títulos) y Zen Kaku Gothic New (texto), desde Google Fonts.
 - El mapa de Google solo se carga cuando el visitante pulsa «Mostrar mapa» (sin cookies de terceros antes).

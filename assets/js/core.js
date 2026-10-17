@@ -27,16 +27,14 @@ export const DEFAULT_LOCATIONS = [
 export const DEFAULT_SETTINGS = {
   heroSubtitle: "La esencia de la gastronomía japonesa",
   heroText: "Cocina japonesa, sake y té japonés para compartir sin prisa.",
-  aboutTitle: "",
-  aboutText: "",
+  aboutTitle: "Quiénes somos",
+  aboutText: "Fujiyama es cocina japonesa en Tenerife, con dos restaurantes: uno en Santa Cruz, en la calle José Murphy, y otro en La Laguna, en la plaza de la Concepción.\n\nNuestra carta recorre la cocina japonesa de principio a fin: entrantes como el tataki de atún o las gyozas, usuzukuri, sashimi, nigiris, uramakis y futomakis, y platos calientes como el ramen, el okonomiyaki o el pollo teriyaki.\n\nPara acompañar, tés japoneses, sake, cervezas y whiskies japoneses y una selección de vinos, también canarios.",
   aboutImage: "",
-  phone: "",          // teléfono general / reservas (opcional si cada local tiene el suyo)
+  phone: "922 28 77 55", // teléfono general
   whatsapp: "",
   email: "",
   locations: DEFAULT_LOCATIONS,
-  reservationUrl: "", // sistema de reservas externo (CoverManager, TheFork...) si existe
-  notifyEmail: "",    // aviso por email de cada formulario (FormSubmit)
-  social: { instagram: "", facebook: "", tiktok: "", tripadvisor: "", google: "" },
+  social: { instagram: "https://www.instagram.com/fujiyama_restaurante/", facebook: "", tiktok: "", tripadvisor: "", google: "" },
   legal: { owner: "", nif: "", address: "", email: "" }
 };
 
