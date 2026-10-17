@@ -1,4 +1,4 @@
-import { isConfigured, sb, loadSettings, loadCarta, loadGallery, price, esc, telHref, waHref } from "./core.js";
+import { isConfigured, sb, loadSettings, loadCarta, loadGallery, price, esc, telHref, waHref, mainPhone } from "./core.js";
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -296,30 +296,61 @@ function applySettings(s) {
   }
   if (s.aboutImage) $("#about-img").src = s.aboutImage;
 
-  // Información de contacto
+  // Información de contacto: teléfono general + un bloque por restaurante
+  const phone = mainPhone(s);
+  const mapsUrl = l => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(l.mapsQuery || l.address)}`;
   const blocks = [];
-  blocks.push(info("i-phone", "Teléfono", s.phone
-    ? `<p><a href="${telHref(s.phone)}">${esc(s.phone)}</a></p><div class="info__actions"><a class="btn btn--sm btn--red" href="${telHref(s.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>${s.whatsapp ? `<a class="btn btn--sm" href="${waHref(s.whatsapp, "Hola Fujiyama, quería hacer una reserva.")}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}</div>`
-    : `<p>${pend("Teléfono")}</p>`));
-  if (!s.phone && s.whatsapp) blocks.push(info("i-wa", "WhatsApp", `<p><a href="${waHref(s.whatsapp)}" target="_blank" rel="noopener">${esc(s.whatsapp)}</a></p>`));
-  blocks.push(info("i-pin", "Dirección", s.address ? `<p>${esc(s.address)}</p><div class="info__actions"><a class="btn btn--sm" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s.mapsQuery || s.address)}">Cómo llegar</a></div>` : `<p>${pend("Dirección")}</p>`));
-  blocks.push(info("i-clock", "Horario", s.hours.length
-    ? `<table class="hours">${s.hours.map(h => `<tr><td>${esc(h.days)}</td><td>${esc(h.hours)}</td></tr>`).join("")}</table>${s.hoursNote ? `<p style="font-size:14px;color:var(--muted);margin-top:8px">${esc(s.hoursNote)}</p>` : ""}`
-    : `<p>${pend("Horario")}</p>`));
+  if (s.phone || !s.locations.some(l => l.phone)) {
+    blocks.push(info("i-phone", "Teléfono de reservas", s.phone
+      ? `<p><a href="${telHref(s.phone)}">${esc(s.phone)}</a></p><div class="info__actions"><a class="btn btn--sm btn--red" href="${telHref(s.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>${s.whatsapp ? `<a class="btn btn--sm" href="${waHref(s.whatsapp, "Hola Fujiyama, quería hacer una reserva.")}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}</div>`
+      : `<p>${pend("Teléfono")}</p>`));
+  }
+  s.locations.forEach((l, i) => {
+    const body = `
+      <p>${l.address ? esc(l.address) : pend("Dirección")}</p>
+      ${l.phone ? `<p style="margin-top:4px"><a href="${telHref(l.phone)}">${esc(l.phone)}</a></p>` : ""}
+      ${l.hours.length
+        ? `<table class="hours" style="margin-top:10px">${l.hours.map(h => `<tr${/cerrado/i.test(h.hours) ? ' class="is-closed"' : ""}><td>${esc(h.days)}</td><td>${esc(h.hours)}</td></tr>`).join("")}</table>`
+        : `<p style="margin-top:8px">${pend("Horario")}</p>`}
+      ${l.hoursNote ? `<p style="font-size:14px;color:var(--muted);margin-top:8px">${esc(l.hoursNote)}</p>` : ""}
+      <div class="info__actions">
+        ${l.phone ? `<a class="btn btn--sm btn--red" href="${telHref(l.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>` : ""}
+        ${l.whatsapp ? `<a class="btn btn--sm" href="${waHref(l.whatsapp, `Hola Fujiyama ${l.name}, quería hacer una reserva.`)}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}
+        ${l.address ? `<a class="btn btn--sm" target="_blank" rel="noopener" href="${mapsUrl(l)}">Cómo llegar</a><button class="btn btn--sm" type="button" data-map="${i}"><svg><use href="#i-pin"/></svg>Ver mapa</button>` : ""}
+      </div>`;
+    blocks.push(info("i-pin", "Fujiyama " + esc(l.name), body));
+  });
   if (s.email) blocks.push(info("i-mail", "Email", `<p><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></p>`));
   $("#info-list").innerHTML = blocks.join("");
 
   // Mapa (se carga al pulsar, sin cookies de terceros hasta entonces)
   const map = $("#map");
-  if (s.address) {
-    map.innerHTML = `<div><button class="btn btn--sm" type="button" id="load-map"><svg><use href="#i-pin"/></svg>Mostrar mapa</button><p>Al mostrar el mapa se cargará Google Maps, que puede usar cookies propias.</p></div>`;
-    $("#load-map").addEventListener("click", () => {
-      map.innerHTML = `<iframe title="Mapa de Fujiyama" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${encodeURIComponent(s.mapsQuery || s.address)}&output=embed"></iframe>`;
-    });
+  const withAddr = s.locations.map((l, i) => ({ l, i })).filter(x => x.l.address);
+  const showMap = i => {
+    const l = s.locations[i];
+    map.innerHTML = `<iframe title="Mapa de Fujiyama ${esc(l.name)}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?q=${encodeURIComponent(l.mapsQuery || l.address)}&output=embed"></iframe>`
+      + (withAddr.length > 1 ? `<div class="map__switch">${withAddr.map(x => `<button type="button" data-map="${x.i}" class="${x.i === i ? "is-active" : ""}">${esc(x.l.name)}</button>`).join("")}</div>` : "");
+  };
+  if (withAddr.length) {
+    map.innerHTML = `<div><div class="info__actions" style="justify-content:center">${withAddr.map(x => `<button class="btn btn--sm" type="button" data-map="${x.i}"><svg><use href="#i-pin"/></svg>Mapa ${esc(x.l.name)}</button>`).join("")}</div><p>Al mostrar el mapa se cargará Google Maps, que puede usar cookies propias.</p></div>`;
   } else map.innerHTML = `<div>${pend("Mapa")}<p>Se mostrará cuando se añada la dirección.</p></div>`;
+  $("#contacto").addEventListener("click", e => {
+    const b = e.target.closest("[data-map]"); if (!b) return;
+    showMap(+b.dataset.map);
+    if (!map.contains(b)) map.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
+
+  // Locales en la portada
+  $("#hero-locs").innerHTML = s.locations.map(l => `<span>${esc(l.name)}</span>`).join("");
+
+  // Selector de restaurante en el formulario
+  const sel = $("#f-loc");
+  sel.innerHTML = `<option value="">Elige restaurante</option>` + s.locations.map(l => `<option>${esc(l.name)}</option>`).join("");
+  if (s.locations.length === 1) sel.value = s.locations[0].name;
+  $("#f-loc-field").hidden = s.locations.length < 2;
 
   // Botones de llamada
-  $$("[data-phone-btn]").forEach(a => { if (s.phone) { a.hidden = false; a.href = telHref(s.phone); } });
+  $$("[data-phone-btn]").forEach(a => { if (phone) { a.hidden = false; a.href = telHref(phone); } });
   document.body.classList.add("has-dock");
 
   // Reserva externa
@@ -331,9 +362,9 @@ function applySettings(s) {
 
   // Pie
   const fc = [];
-  fc.push(s.phone ? `<p><a href="${telHref(s.phone)}">${esc(s.phone)}</a></p>` : `<p>${pend("Teléfono")}</p>`);
+  fc.push(phone ? `<p><a href="${telHref(phone)}">${esc(phone)}</a></p>` : `<p>${pend("Teléfono")}</p>`);
   if (s.email) fc.push(`<p><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></p>`);
-  fc.push(s.address ? `<p>${esc(s.address)}</p>` : `<p>${pend("Dirección")}</p>`);
+  s.locations.forEach(l => fc.push(`<p><strong>${esc(l.name)}</strong><br>${l.address ? esc(l.address) : pend("Dirección")}</p>`));
   $("#footer-contact").innerHTML = fc.join("");
   const net = [
     ["instagram", "i-ig", "Instagram"], ["facebook", "i-fb", "Facebook"], ["tiktok", "i-tt", "TikTok"],
@@ -343,16 +374,20 @@ function applySettings(s) {
     ? net.map(([k, i, n]) => `<a href="${esc(s.social[k])}" target="_blank" rel="noopener" aria-label="${n}"><svg><use href="#${i}"/></svg></a>`).join("")
     : pend("Redes sociales");
 
-  // Datos estructurados
+  // Datos estructurados: un Restaurant por local
   try {
-    const ld = JSON.parse($("#ld-restaurant").textContent);
     const base = location.origin;
-    ld.url = base + "/"; ld.image = base + "/assets/img/og-fujiyama.jpg"; ld.logo = base + "/assets/img/logo-fujiyama.jpg"; ld.hasMenu = base + "/#carta";
-    if (s.phone) ld.telephone = s.phone;
-    if (s.email) ld.email = s.email;
-    if (s.address) ld.address = { "@type": "PostalAddress", streetAddress: s.address, addressCountry: "ES" };
-    const same = Object.values(s.social).filter(Boolean); if (same.length) ld.sameAs = same;
-    $("#ld-restaurant").textContent = JSON.stringify(ld);
+    const same = Object.values(s.social).filter(Boolean);
+    const graph = s.locations.map(l => ({
+      "@type": "Restaurant", name: `Fujiyama ${l.name} · Cocina japonesa`, servesCuisine: ["Japonesa", "Sushi"],
+      url: base + "/", image: base + "/assets/img/og-fujiyama.jpg", logo: base + "/assets/img/logo-fujiyama.jpg",
+      hasMenu: base + "/#carta", acceptsReservations: true, priceRange: "€€",
+      ...(l.phone || s.phone ? { telephone: l.phone || s.phone } : {}),
+      ...(s.email ? { email: s.email } : {}),
+      ...(l.address ? { address: { "@type": "PostalAddress", streetAddress: l.address, addressRegion: "Santa Cruz de Tenerife", addressCountry: "ES" } } : {}),
+      ...(same.length ? { sameAs: same } : {})
+    }));
+    $("#ld-restaurant").textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
   } catch {}
 
   configureForm(s);
@@ -379,9 +414,10 @@ $("#f-date").min = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
 
 function configureForm(s) {
   formSettings = s;
+  const ph = mainPhone(s);
   if (!isConfigured() && !s.notifyEmail) {
     $("#f-submit").disabled = true;
-    showStatus(`<strong>Formulario pendiente de configuración.</strong> Para recibir reservas y consultas hay que conectar Supabase o indicar un email de avisos (ver README).${s.phone ? ` Mientras tanto, llámanos al <a href="${telHref(s.phone)}">${esc(s.phone)}</a>.` : ""}`);
+    showStatus(`<strong>Formulario pendiente de configuración.</strong> Para recibir reservas y consultas hay que conectar Supabase o indicar un email de avisos (ver README).${ph ? ` Mientras tanto, llámanos al <a href="${telHref(ph)}">${esc(ph)}</a>.` : ""}`);
   }
 }
 function showStatus(html, ok = false) {
@@ -397,6 +433,7 @@ form.addEventListener("submit", async e => {
   if (!d.name || d.name.trim().length < 2) errors.push("tu nombre");
   if (!d.phone?.trim() && !d.email?.trim()) errors.push("un teléfono o un email");
   if (d.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)) errors.push("un email válido");
+  if (formSettings && formSettings.locations.length > 1 && !d.location) errors.push("el restaurante");
   if (kind === "reserva") {
     if (!d.res_date) errors.push("la fecha");
     if (!d.res_time) errors.push("la hora");
@@ -407,7 +444,7 @@ form.addEventListener("submit", async e => {
 
   const btn = $("#f-submit"); btn.disabled = true; const label = btn.textContent; btn.textContent = "Enviando…";
   const row = {
-    kind, name: d.name.trim(), email: d.email?.trim() || null, phone: d.phone?.trim() || null, message: d.message?.trim() || null,
+    kind, location: d.location || null, name: d.name.trim(), email: d.email?.trim() || null, phone: d.phone?.trim() || null, message: d.message?.trim() || null,
     res_date: kind === "reserva" ? d.res_date : null, res_time: kind === "reserva" ? d.res_time : null, people: kind === "reserva" ? +d.people : null
   };
   try {
@@ -422,20 +459,20 @@ form.addEventListener("submit", async e => {
       const r = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(formSettings.notifyEmail)}`, {
         method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
-          _subject: kind === "reserva" ? `Solicitud de reserva · ${row.name} · ${row.res_date} ${row.res_time} · ${row.people} pers.` : `Consulta web · ${row.name}`,
-          _template: "table", Tipo: kind, Nombre: row.name, Telefono: row.phone || "-", Email: row.email || "-",
+          _subject: kind === "reserva" ? `Reserva ${row.location || ""} · ${row.name} · ${row.res_date} ${row.res_time} · ${row.people} pers.` : `Consulta web ${row.location || ""} · ${row.name}`,
+          _template: "table", Tipo: kind, Restaurante: row.location || "-", Nombre: row.name, Telefono: row.phone || "-", Email: row.email || "-",
           Fecha: row.res_date || "-", Hora: row.res_time || "-", Personas: row.people || "-", Mensaje: row.message || "-"
         })
       });
       if (!r.ok && !saved) throw new Error("No se pudo enviar el aviso por email");
     }
-    form.reset(); setKind(kind);
+    form.reset(); setKind(kind); if (formSettings.locations.length === 1) $("#f-loc").value = formSettings.locations[0].name;
     showStatus(kind === "reserva"
       ? "<strong>¡Solicitud enviada!</strong> Tu reserva aún no está confirmada: el restaurante te contactará para confirmarla."
       : "<strong>¡Mensaje enviado!</strong> Te responderemos lo antes posible.", true);
   } catch (err) {
     console.error(err);
-    showStatus("No se ha podido enviar ahora mismo. Inténtalo de nuevo en unos minutos" + (formSettings?.phone ? ` o llámanos al <a href="${telHref(formSettings.phone)}">${esc(formSettings.phone)}</a>` : "") + ".");
+    showStatus("No se ha podido enviar ahora mismo. Inténtalo de nuevo en unos minutos" + (formSettings && mainPhone(formSettings) ? ` o llámanos al <a href="${telHref(mainPhone(formSettings))}">${esc(mainPhone(formSettings))}</a>` : "") + ".");
   } finally { btn.disabled = false; btn.textContent = label; }
 });
 

@@ -26,28 +26,18 @@ supabase/               Scripts SQL (esquema, carta inicial, crear administrador
 vercel.json · robots.txt · sitemap.xml
 ```
 
-## 2. Conectar Supabase (15 minutos, una sola vez)
+## 2. Supabase (base de datos, fotos/vídeos y acceso al panel)
 
-1. Crea una cuenta y un proyecto en **supabase.com** (región: *West EU*). Guarda la contraseña de la base de datos.
-2. **SQL Editor → New query**: pega el contenido de `supabase/01_schema.sql` y pulsa **Run**. Crea las tablas, las reglas de seguridad y el almacenamiento `media`.
-3. (Opcional) Ejecuta `supabase/02_carta_inicial.sql` para cargar la carta. También puedes hacerlo desde el panel con el botón **Importar la carta inicial**.
-4. **Authentication → Users → Add user → Create new user**: tu email y una contraseña, marcando *Auto Confirm User*.
-5. Abre `supabase/03_crear_admin.sql`, cambia `TU_EMAIL@ejemplo.com` por ese email y ejecútalo. Solo los usuarios de esta lista pueden modificar contenido.
-6. **Authentication → URL Configuration**: en *Site URL* pon tu dominio (p. ej. `https://www.fujiyama.es`) y añade `https://www.fujiyama.es/admin/` en *Redirect URLs* (para recuperar la contraseña).
-7. **Project Settings → API**: copia *Project URL* y la clave *anon public* en `assets/js/config.js`:
+Ya está creado el proyecto **fujiyama** en tu cuenta de Supabase y su URL y clave pública están puestas en `assets/js/config.js`.
 
-```js
-window.FUJI_CONFIG = {
-  SUPABASE_URL: "https://xxxxxxxx.supabase.co",
-  SUPABASE_ANON_KEY: "eyJhbGciOi...",
-  STORAGE_BUCKET: "media",
-  SITE_URL: "https://www.fujiyama.es"
-};
-```
+1. **Preparar la base de datos (una vez):** Supabase → proyecto *fujiyama* → **SQL Editor → New query** → pega `supabase/01_schema.sql` → **Run**. Después, igual con `supabase/02_carta_inicial.sql` (o usa el botón *Importar la carta inicial* del panel).
+2. **Authentication → URL Configuration:** en *Site URL* pon el dominio de la web (o la URL de Vercel) y añade `https://TU-DOMINIO/admin/` en *Redirect URLs*. Así los emails de confirmación y de recuperar contraseña te devuelven al panel.
+3. **Crear tu acceso:** entra en `https://TU-DOMINIO/admin/`. Mientras no exista ningún administrador aparece **«Crear cuenta de administrador»**: pon tu email y contraseña, confirma el email que te llega y entra. Esa primera cuenta queda como administradora y la opción desaparece. Hazlo nada más publicar la web.
+   - Alternativa manual: crear el usuario en *Authentication → Users* y ejecutar `supabase/03_crear_admin.sql` con tu email.
 
-> La clave *anon* es pública por diseño. Lo que protege los datos son las políticas RLS de `01_schema.sql`: cualquiera puede **leer** la carta, la galería publicada y los datos del restaurante, y **enviar** un formulario; solo los administradores pueden **leer mensajes, subir, editar o borrar**. Nunca pongas la clave *service_role* en la web.
+> La clave *anon* de `config.js` es pública por diseño. Lo que protege los datos son las políticas RLS de `01_schema.sql`: cualquiera puede **leer** la carta, la galería publicada y los datos del restaurante, y **enviar** un formulario; solo los administradores pueden **leer mensajes, subir, editar o borrar**. Nunca pongas la clave *service_role* en la web.
 
-**Mientras `config.js` esté vacío**, la web funciona con la carta y las fotos por defecto, el panel muestra "Configuración pendiente" y el formulario aparece desactivado y marcado como pendiente (no simula envíos).
+Si la base de datos no está preparada, la web sigue funcionando con la carta y las fotos por defecto, y el panel avisa de que falta ejecutar el esquema (no simula subidas).
 
 ## 3. Publicar en Vercel
 
@@ -73,9 +63,9 @@ window.FUJI_CONFIG = {
 - Una sección sin productos pero con nota se muestra como aviso.
 - Si cambias la carta en papel, actualiza también las imágenes de `assets/carta/` y el PDF (botones «Ver carta original» y «Descargar carta»).
 
-**Datos del restaurante**: título y frase de portada, texto y foto de *Sobre nosotros*, teléfono, WhatsApp, email, dirección (activa el mapa y «Cómo llegar»), horario, enlace a un sistema de reservas externo, redes sociales y datos legales. Lo que se deja vacío aparece en la web como «pendiente de configurar» o no se muestra (redes sociales, WhatsApp).
+**Datos del restaurante**: título y frase de portada, texto y foto de *Sobre nosotros*, contacto general (teléfono, WhatsApp, emails), **restaurantes** (Santa Cruz y La Laguna: nombre, dirección, teléfono, WhatsApp, horario por días —escribe «Cerrado» el día de descanso— y nota), enlace a un sistema de reservas externo, redes sociales y datos legales. Lo que se deja vacío aparece en la web como «pendiente de configurar» o no se muestra (redes sociales, WhatsApp).
 
-**Mensajes**: solicitudes de reserva y consultas, con llamada/WhatsApp directo y estado (nuevo, visto, confirmado, descartado). La web avisa al cliente de que su reserva **no está confirmada** hasta que el restaurante le contacte.
+**Mensajes**: solicitudes de reserva y consultas (indican el restaurante elegido), con llamada/WhatsApp directo y estado (nuevo, visto, confirmado, descartado). La web avisa al cliente de que su reserva **no está confirmada** hasta que el restaurante le contacte.
 
 ## 5. Avisos por email (opcional)
 
@@ -90,7 +80,7 @@ Hay dos opciones y pueden convivir:
 ## 7. Pendiente de completar
 
 - **Verificar en la carta**: precios de los uramakis 55–57 (en la captura los precios están desalineados; se ha leído 55 = 8,00 €, 56 = 10,00 €, 57 = 8,00 €) y el precio del nº 15 Usuzukuri carabinero, que no aparece en la captura (se muestra sin precio).
-- Teléfono, WhatsApp, dirección, horario, email, redes sociales.
+- Teléfonos (general o de cada restaurante), WhatsApp, email y redes sociales. Direcciones y horarios de Santa Cruz y La Laguna ya están puestos.
 - Texto y foto de *Sobre nosotros* (ahora hay un texto provisional marcado como tal).
 - Datos legales (titular, NIF, domicilio) y revisión de los textos legales.
 - Iconos de alérgenos por plato: en la carta original aparecen junto a cada plato, pero son demasiado pequeños en la captura para leerlos con seguridad, por eso no se han transcrito. La web muestra la declaración general de alérgenos.

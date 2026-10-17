@@ -403,3 +403,14 @@ body.has-dock .footer { padding-bottom: calc(100px + env(safe-area-inset-bottom)
 .legal p, .legal li { color: #cfccc7; }
 .legal [data-legal] { color: #fff; }
 .legal .notice { border: 1px dashed rgba(193,51,63,.7); background: rgba(193,51,63,.08); padding: 16px 18px; color: #ecc7cb; font-size: 15px; }
+
+/* Locales */
+.hero__locs { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 18px; margin: 16px 0 0; font-size: 12px; letter-spacing: .26em; text-transform: uppercase; color: #e6e3de; }
+.hero__locs span { display: inline-flex; align-items: center; gap: 10px; }
+.hero__locs span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--red); }
+@media (min-width: 900px) { .hero__locs { justify-content: flex-start; } }
+.hours tr.is-closed td { color: var(--muted-2); }
+.map__switch { position: absolute; left: 10px; top: 10px; z-index: 2; display: flex; background: rgba(0,0,0,.85); border: 1px solid var(--line); }
+.map__switch button { padding: 8px 14px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.map__switch button.is-active { background: var(--red); color: #fff; }
+.field select { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, #888 50%), linear-gradient(135deg, #888 50%, transparent 50%); background-position: calc(100% - 20px) 50%, calc(100% - 15px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 40px; }

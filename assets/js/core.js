@@ -4,19 +4,36 @@ export const CFG = window.FUJI_CONFIG || {};
 export const BUCKET = CFG.STORAGE_BUCKET || "media";
 export const isConfigured = () => !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
 
+const HORARIO = "13:00–16:30 · 19:30–23:30";
+export const DEFAULT_LOCATIONS = [
+  {
+    id: "santa-cruz", name: "Santa Cruz",
+    address: "Calle José Murphy, 2, Santa Cruz de Tenerife",
+    mapsQuery: "", phone: "", whatsapp: "", hoursNote: "",
+    hours: [{ days: "Todos los días", hours: HORARIO }]
+  },
+  {
+    id: "la-laguna", name: "La Laguna",
+    address: "Plaza de la Concepción, 12, San Cristóbal de La Laguna",
+    mapsQuery: "", phone: "", whatsapp: "", hoursNote: "",
+    hours: [
+      { days: "Lunes y martes", hours: HORARIO },
+      { days: "Miércoles", hours: "Cerrado" },
+      { days: "Jueves a domingo", hours: HORARIO }
+    ]
+  }
+];
+
 export const DEFAULT_SETTINGS = {
   heroSubtitle: "La esencia de la gastronomía japonesa",
   heroText: "Cocina japonesa, sake y té japonés para compartir sin prisa.",
   aboutTitle: "",
   aboutText: "",
   aboutImage: "",
-  phone: "",
+  phone: "",          // teléfono general / reservas (opcional si cada local tiene el suyo)
   whatsapp: "",
   email: "",
-  address: "",
-  mapsQuery: "",
-  hours: [],          // [{ days: "Lunes a viernes", hours: "13:00–16:00 · 20:00–23:30" }]
-  hoursNote: "",
+  locations: DEFAULT_LOCATIONS,
   reservationUrl: "", // sistema de reservas externo (CoverManager, TheFork...) si existe
   notifyEmail: "",    // aviso por email de cada formulario (FormSubmit)
   social: { instagram: "", facebook: "", tiktok: "", tripadvisor: "", google: "" },
@@ -34,15 +51,25 @@ export async function sb() {
   return _sb;
 }
 
+const cleanLoc = (l, i) => ({
+  id: l.id || "local-" + (i + 1), name: l.name || `Local ${i + 1}`, address: l.address || "", mapsQuery: l.mapsQuery || "",
+  phone: l.phone || "", whatsapp: l.whatsapp || "", hoursNote: l.hoursNote || "",
+  hours: Array.isArray(l.hours) ? l.hours.filter(h => h && (h.days || h.hours)) : []
+});
+
 export function mergeSettings(data) {
   const d = data || {};
+  const locs = Array.isArray(d.locations) && d.locations.length ? d.locations : DEFAULT_LOCATIONS;
   return {
     ...DEFAULT_SETTINGS, ...d,
+    locations: locs.map(cleanLoc),
     social: { ...DEFAULT_SETTINGS.social, ...(d.social || {}) },
-    legal: { ...DEFAULT_SETTINGS.legal, ...(d.legal || {}) },
-    hours: Array.isArray(d.hours) ? d.hours : []
+    legal: { ...DEFAULT_SETTINGS.legal, ...(d.legal || {}) }
   };
 }
+
+/* Teléfono para los botones "Llamar": el general o, si no hay, el del primer local que lo tenga */
+export const mainPhone = s => s.phone || s.locations.find(l => l.phone)?.phone || "";
 
 export async function loadSettings() {
   try {

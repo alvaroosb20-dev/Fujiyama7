@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Fujiyama · Cocina japonesa — La esencia de la gastronomía japonesa</title>
-  <meta name="description" content="Fujiyama, restaurante de cocina japonesa. Consulta nuestra carta, menú japonés, sake, tés japoneses y vinos, mira la galería y reserva tu mesa.">
+  <title>Fujiyama · Cocina japonesa en Santa Cruz y La Laguna</title>
+  <meta name="description" content="Fujiyama, cocina japonesa en Santa Cruz de Tenerife (C/ José Murphy 2) y La Laguna (Plaza de la Concepción 12). Carta de sushi, sashimi, nigiris y makis, sake y té japonés. Reserva tu mesa.">
   <meta name="theme-color" content="#000000">
   <link rel="canonical" href="https://www.tudominio.com/">
   <meta property="og:type" content="restaurant">
@@ -96,6 +96,7 @@
       </h1>
       <p class="hero__title" aria-hidden="true" data-s="heroSubtitle">La esencia de la gastronomía japonesa</p>
       <p class="hero__text" data-s="heroText">Cocina japonesa, sake y té japonés para compartir sin prisa.</p>
+      <p class="hero__locs" id="hero-locs"><span>Santa Cruz</span><span>La Laguna</span></p>
       <div class="hero__actions">
         <a href="#carta" class="btn btn--red"><svg><use href="#i-book"/></svg>Ver nuestra carta</a>
         <a href="#reservar" class="btn" data-reserve><svg><use href="#i-cal"/></svg>Reservar mesa</a>
@@ -235,6 +236,7 @@
           <form id="contact-form" class="form-grid" novalidate>
             <input type="hidden" name="kind" value="reserva">
             <div class="hp" aria-hidden="true"><label>No rellenar <input name="website" tabindex="-1" autocomplete="off"></label></div>
+            <div class="field" id="f-loc-field"><label for="f-loc">Restaurante</label><select id="f-loc" name="location"><option value="">Elige restaurante</option><option>Santa Cruz</option><option>La Laguna</option></select></div>
             <div class="field"><label for="f-name">Nombre</label><input id="f-name" name="name" required minlength="2" maxlength="120" autocomplete="name"></div>
             <div class="form-grid form-grid--2">
               <div class="field"><label for="f-phone">Teléfono</label><input id="f-phone" name="phone" type="tel" maxlength="40" autocomplete="tel" inputmode="tel"></div>

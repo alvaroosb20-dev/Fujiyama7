@@ -47,6 +47,16 @@
         <button class="btn btn--red" type="submit">Entrar</button>
         <button class="a-link" type="button" id="forgot">He olvidado mi contraseña</button>
       </form>
+      <div id="first-admin" hidden style="margin-top:26px;padding-top:22px;border-top:1px solid var(--line)">
+        <h2 class="a-h2">¿Primera vez? Crea la cuenta de administrador</h2>
+        <p class="a-muted a-small">Todavía no hay ningún administrador. La primera cuenta que se cree aquí lo será, y después esta opción desaparece.</p>
+        <form id="signup-form" class="form-grid">
+          <div class="field"><label for="s-email">Email</label><input id="s-email" type="email" required autocomplete="username"></div>
+          <div class="field"><label for="s-pass">Contraseña (mín. 8 caracteres)</label><input id="s-pass" type="password" minlength="8" required autocomplete="new-password"></div>
+          <div class="form-status" id="signup-status"></div>
+          <button class="btn" type="submit">Crear cuenta de administrador</button>
+        </form>
+      </div>
     </section>
 
     <!-- Nueva contraseña (tras enlace de recuperación) -->
@@ -131,21 +141,19 @@
             </div>
           </div>
 
-          <h2 class="a-h2">Contacto y reservas</h2>
+          <h2 class="a-h2">Contacto general</h2>
           <div class="form-grid form-grid--2">
-            <div class="field"><label>Teléfono</label><input name="phone" maxlength="40" placeholder="922 000 000"></div>
+            <div class="field"><label>Teléfono de reservas (opcional si cada local tiene el suyo)</label><input name="phone" maxlength="40" placeholder="922 000 000"></div>
             <div class="field"><label>WhatsApp (si lo tenéis)</label><input name="whatsapp" maxlength="40" placeholder="600 000 000"></div>
             <div class="field"><label>Email público</label><input name="email" type="email" maxlength="120"></div>
             <div class="field"><label>Email para avisos de formularios</label><input name="notifyEmail" type="email" maxlength="120" placeholder="Recibe cada reserva/consulta por email"></div>
-            <div class="field"><label>Dirección</label><input name="address" maxlength="200"></div>
-            <div class="field"><label>Búsqueda en Google Maps (opcional)</label><input name="mapsQuery" maxlength="200" placeholder="Nombre + dirección exacta en Maps"></div>
             <div class="field" style="grid-column:1/-1"><label>Enlace a sistema de reservas externo (opcional)</label><input name="reservationUrl" type="url" maxlength="300" placeholder="https://… (CoverManager, TheFork, etc.)"></div>
           </div>
 
-          <h2 class="a-h2">Horario</h2>
-          <div id="hours" class="a-hours"></div>
-          <div class="a-row"><button type="button" class="btn btn--sm" id="add-hour">+ Añadir fila</button></div>
-          <div class="field" style="margin-top:14px"><label>Nota de horario (opcional)</label><input name="hoursNote" maxlength="200" placeholder="Ej.: cerrado por vacaciones del 1 al 15"></div>
+          <h2 class="a-h2">Restaurantes</h2>
+          <p class="a-muted a-small" style="margin-top:-6px">Dirección, teléfono y horario de cada local. Escribe «Cerrado» en las horas del día de descanso.</p>
+          <div id="locations"></div>
+          <div class="a-row"><button type="button" class="btn btn--sm" id="add-loc">+ Añadir restaurante</button></div>
 
           <h2 class="a-h2">Redes sociales</h2>
           <div class="form-grid form-grid--2">

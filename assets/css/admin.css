@@ -114,3 +114,10 @@ code { background: #000; border: 1px solid var(--line); padding: 1px 6px; font-s
   .a-top .btn--sm { min-height: 38px; padding: 0 12px; letter-spacing: .12em; }
   .a-hour { grid-template-columns: 1fr auto; } .a-hour input[data-h=hours] { grid-column: 1; grid-row: 2; }
 }
+
+.a-loc { border: 1px solid var(--line); background: #0b0b0c; padding: 14px; margin-bottom: 12px; display: grid; gap: 12px; }
+.a-loc__head { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.a-loc__head strong { font-family: var(--serif); font-size: 18px; }
+.a-loc input { min-height: 44px; background: #000; color: var(--text); border: 1px solid var(--line); padding: 8px 10px; font: inherit; width: 100%; }
+.a-loc label { font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); display: grid; gap: 6px; }
+.a-loc .a-hours { margin-bottom: 0; }

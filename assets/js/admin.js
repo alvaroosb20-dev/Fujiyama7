@@ -131,8 +131,27 @@ async function start() {
   });
   const { data: { session } } = await client.auth.getSession();
   if (location.hash.includes("type=recovery")) return show("v-recover");
-  if (session) await enter(); else show("v-login");
+  if (session) await enter(); else await showLogin();
 }
+
+async function showLogin() {
+  show("v-login");
+  const { data: hasAdmin, error } = await client.rpc("has_admin");
+  $("#first-admin").hidden = !!error || hasAdmin !== false;
+  if (error) setStatus($("#login-status"), "La base de datos de Fujiyama aún no está preparada (falta ejecutar supabase/01_schema.sql). Las subidas no funcionarán hasta entonces.");
+}
+
+$("#signup-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const st = $("#signup-status"); setStatus(st, "");
+  const { data, error } = await client.auth.signUp({
+    email: $("#s-email").value.trim(), password: $("#s-pass").value,
+    options: { emailRedirectTo: location.origin + "/admin/" }
+  });
+  if (error) return setStatus(st, esc(error.message));
+  if (data.session) return enter();
+  setStatus(st, "Cuenta creada. Te hemos enviado un email: pulsa el enlace para confirmarla y después entra aquí con tu email y contraseña.", true);
+});
 
 $("#login-form").addEventListener("submit", async e => {
   e.preventDefault();
@@ -158,11 +177,13 @@ $("#recover-form").addEventListener("submit", async e => {
 $("#logout").addEventListener("click", async () => { await client.auth.signOut(); location.reload(); });
 
 async function enter() {
-  const { data: isAdmin, error } = await client.rpc("is_admin");
+  // claim_admin: si aún no hay administrador, esta cuenta pasa a serlo; si no, solo comprueba permisos
+  let { data: isAdmin, error } = await client.rpc("claim_admin");
+  if (error && /claim_admin/.test(error.message || "")) ({ data: isAdmin, error } = await client.rpc("is_admin"));
   if (error || !isAdmin) {
-    show("v-login");
-    setStatus($("#login-status"), error ? "Error comprobando permisos: " + esc(error.message) + ". ¿Has ejecutado supabase/01_schema.sql?" : "Este usuario no tiene permisos de administrador. Ejecuta supabase/03_crear_admin.sql con tu email.");
     await client.auth.signOut();
+    await showLogin();
+    setStatus($("#login-status"), error ? "Error comprobando permisos: " + esc(error.message) + ". ¿Has ejecutado supabase/01_schema.sql?" : "Este usuario no tiene permisos de administrador.");
     return;
   }
   show("v-app"); $("#logout").hidden = false;
@@ -552,15 +573,51 @@ async function loadSettingsAdmin() {
     const [a, b] = el.name.split(".");
     el.value = (b ? settingsData[a]?.[b] : settingsData[a]) ?? "";
   });
-  renderHours(settingsData.hours.length ? settingsData.hours : [{ days: "", hours: "" }]);
+  renderLocations(settingsData.locations);
   aboutPreview();
 }
-function renderHours(rows) {
-  $("#hours").innerHTML = rows.map(h => `<div class="a-hour"><input data-h="days" value="${esc(h.days)}" placeholder="Días (ej.: Martes a domingo)"><input data-h="hours" value="${esc(h.hours)}" placeholder="Horas (ej.: 13:00–16:00 · 20:00–23:30)"><button type="button" class="a-ib a-ib--red" data-rmh aria-label="Quitar fila">✕</button></div>`).join("");
+
+/* Restaurantes (locales) */
+const hourRow = h => `<div class="a-hour"><input data-h="days" value="${esc(h.days)}" placeholder="Días (ej.: Jueves a domingo)"><input data-h="hours" value="${esc(h.hours)}" placeholder="Horas o «Cerrado»"><button type="button" class="a-ib a-ib--red" data-rmh aria-label="Quitar fila">✕</button></div>`;
+function renderLocations(locs) {
+  $("#locations").innerHTML = locs.map((l, i) => `
+    <div class="a-loc" data-loc="${esc(l.id || "")}">
+      <div class="a-loc__head"><strong>${esc(l.name || "Nuevo restaurante")}</strong><button type="button" class="a-ib a-ib--red" data-rmloc>Quitar restaurante</button></div>
+      <div class="form-grid form-grid--2">
+        <label>Nombre<input data-l="name" value="${esc(l.name)}" required placeholder="Ej.: Santa Cruz"></label>
+        <label>Dirección<input data-l="address" value="${esc(l.address)}"></label>
+        <label>Teléfono<input data-l="phone" value="${esc(l.phone)}" placeholder="922 000 000"></label>
+        <label>WhatsApp<input data-l="whatsapp" value="${esc(l.whatsapp)}"></label>
+        <label style="grid-column:1/-1">Búsqueda en Google Maps (opcional)<input data-l="mapsQuery" value="${esc(l.mapsQuery)}" placeholder="Si el mapa no encuentra bien la dirección"></label>
+      </div>
+      <div><label style="margin-bottom:6px">Horario</label><div class="a-hours">${(l.hours.length ? l.hours : [{ days: "", hours: "" }]).map(hourRow).join("")}</div>
+      <button type="button" class="btn btn--sm" data-addh style="margin-top:8px">+ Fila de horario</button></div>
+      <label>Nota de horario (opcional)<input data-l="hoursNote" value="${esc(l.hoursNote)}" placeholder="Ej.: cerrado por vacaciones del 1 al 15"></label>
+    </div>`).join("");
 }
-const readHours = () => $$(".a-hour").map(r => ({ days: $("[data-h=days]", r).value.trim(), hours: $("[data-h=hours]", r).value.trim() })).filter(h => h.days || h.hours);
-$("#add-hour").addEventListener("click", () => renderHours([...readHours(), { days: "", hours: "" }]));
-$("#hours").addEventListener("click", e => { if (e.target.closest("[data-rmh]")) { e.target.closest(".a-hour").remove(); } });
+function readLocations() {
+  return $$(".a-loc").map((el, i) => {
+    const v = k => $(`[data-l=${k}]`, el).value.trim();
+    const name = v("name") || `Local ${i + 1}`;
+    return {
+      id: el.dataset.loc || name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-"),
+      name, address: v("address"), phone: v("phone"), whatsapp: v("whatsapp"), mapsQuery: v("mapsQuery"), hoursNote: v("hoursNote"),
+      hours: $$(".a-hour", el).map(r => ({ days: $("[data-h=days]", r).value.trim(), hours: $("[data-h=hours]", r).value.trim() })).filter(h => h.days || h.hours)
+    };
+  });
+}
+$("#locations").addEventListener("click", e => {
+  if (e.target.closest("[data-rmh]")) e.target.closest(".a-hour").remove();
+  else if (e.target.closest("[data-addh]")) e.target.closest(".a-loc").querySelector(".a-hours").insertAdjacentHTML("beforeend", hourRow({ days: "", hours: "" }));
+  else if (e.target.closest("[data-rmloc]")) {
+    const n = $("[data-l=name]", e.target.closest(".a-loc")).value || "este restaurante";
+    if (confirm(`¿Quitar ${n}? Se aplicará al pulsar «Guardar cambios».`)) e.target.closest(".a-loc").remove();
+  }
+});
+$("#locations").addEventListener("input", e => {
+  if (e.target.dataset.l === "name") e.target.closest(".a-loc").querySelector(".a-loc__head strong").textContent = e.target.value || "Nuevo restaurante";
+});
+$("#add-loc").addEventListener("click", () => renderLocations([...readLocations(), { id: "", name: "", address: "", phone: "", whatsapp: "", mapsQuery: "", hoursNote: "", hours: [] }]));
 
 function aboutPreview() {
   const v = $("#settings-form").aboutImage.value;
@@ -587,7 +644,8 @@ $("#settings-form").addEventListener("submit", async e => {
     const [a, b] = el.name.split(".");
     if (b) data[a][b] = el.value.trim(); else data[a] = el.value.trim();
   });
-  data.hours = readHours();
+  data.locations = readLocations();
+  delete data.hours; delete data.address; delete data.mapsQuery; delete data.hoursNote;
   const st = $("#settings-status");
   const r = await client.from("site_settings").update({ data, updated_at: new Date().toISOString() }).eq("id", 1);
   if (r.error) return setStatus(st, "No se pudo guardar: " + esc(r.error.message));
@@ -614,6 +672,7 @@ function renderMessages() {
     <article class="a-msg${m.status === "nuevo" ? " is-new" : ""}" data-m="${m.id}">
       <div class="a-msg__head">
         <span class="a-tag${m.kind === "reserva" ? " a-tag--res" : ""}">${m.kind}</span>
+        ${m.location ? `<span class="a-tag">${esc(m.location)}</span>` : ""}
         <b>${esc(m.name)}</b>
         <span class="a-muted a-small">${new Date(m.created_at).toLocaleString("es-ES", { dateStyle: "medium", timeStyle: "short" })}</span>
       </div>

@@ -16,6 +16,28 @@ returns boolean language sql stable security definer set search_path = public as
 $$;
 grant execute on function public.is_admin() to anon, authenticated;
 
+-- Primer acceso: si todavía no hay ningún administrador, el primer usuario que
+-- entre en /admin/ y lo solicite se convierte en administrador. Después queda cerrado.
+create or replace function public.claim_admin()
+returns boolean language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then return false; end if;
+  if exists (select 1 from public.admins) then
+    return exists (select 1 from public.admins where user_id = auth.uid());
+  end if;
+  insert into public.admins (user_id) values (auth.uid());
+  return true;
+end;
+$$;
+revoke execute on function public.claim_admin() from anon, public;
+grant execute on function public.claim_admin() to authenticated;
+
+create or replace function public.has_admin()
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.admins);
+$$;
+grant execute on function public.has_admin() to anon, authenticated;
+
 drop policy if exists "admins: ver propio" on public.admins;
 create policy "admins: ver propio" on public.admins for select using (user_id = auth.uid());
 
@@ -101,6 +123,7 @@ create table if not exists public.messages (
   status text not null default 'nuevo' check (status in ('nuevo','visto','confirmado','descartado')),
   created_at timestamptz not null default now()
 );
+alter table public.messages add column if not exists location text check (location is null or char_length(location) <= 80);
 alter table public.messages enable row level security;
 drop policy if exists "mensajes: cualquiera envía" on public.messages;
 create policy "mensajes: cualquiera envía" on public.messages for insert to anon, authenticated
@@ -119,8 +142,11 @@ values ('media', 'media', true, 52428800,
 on conflict (id) do update set public = true,
   file_size_limit = excluded.file_size_limit, allowed_mime_types = excluded.allowed_mime_types;
 
+-- El bucket es público: las fotos se sirven por URL pública sin necesidad de
+-- política de lectura. Solo el admin puede listar (necesario para borrar).
 drop policy if exists "media: lectura pública" on storage.objects;
-create policy "media: lectura pública" on storage.objects for select using (bucket_id = 'media');
+drop policy if exists "media: admin lista" on storage.objects;
+create policy "media: admin lista" on storage.objects for select to authenticated using (bucket_id = 'media' and public.is_admin());
 drop policy if exists "media: admin sube" on storage.objects;
 create policy "media: admin sube" on storage.objects for insert to authenticated with check (bucket_id = 'media' and public.is_admin());
 drop policy if exists "media: admin actualiza" on storage.objects;
