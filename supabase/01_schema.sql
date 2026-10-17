@@ -125,13 +125,10 @@ create table if not exists public.messages (
 );
 alter table public.messages add column if not exists location text check (location is null or char_length(location) <= 80);
 alter table public.messages enable row level security;
+-- (La web ya no tiene formulario: nadie puede escribir mensajes desde fuera.)
 drop policy if exists "mensajes: cualquiera envía" on public.messages;
-create policy "mensajes: cualquiera envía" on public.messages for insert to anon, authenticated
-  with check (status = 'nuevo' and (email is not null or phone is not null));
 drop policy if exists "mensajes: admin lee" on public.messages;
 create policy "mensajes: admin lee" on public.messages for select using (public.is_admin());
-drop policy if exists "mensajes: admin gestiona" on public.messages;
-create policy "mensajes: admin gestiona" on public.messages for update using (public.is_admin()) with check (public.is_admin());
 drop policy if exists "mensajes: admin borra" on public.messages;
 create policy "mensajes: admin borra" on public.messages for delete using (public.is_admin());
 
