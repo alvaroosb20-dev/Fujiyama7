@@ -30,7 +30,7 @@ vercel.json · robots.txt · sitemap.xml
 
 Ya está creado el proyecto **fujiyama** en tu cuenta de Supabase y su URL y clave pública están puestas en `assets/js/config.js`.
 
-1. **Preparar la base de datos (una vez):** Supabase → proyecto *fujiyama* → **SQL Editor → New query** → pega `supabase/01_schema.sql` → **Run**. Después, igual con `supabase/02_carta_inicial.sql` (o usa el botón *Importar la carta inicial* del panel).
+1. **Base de datos:** ya está preparada (tablas, almacenamiento de fotos/vídeos y la carta completa cargada). Los scripts de `supabase/` quedan como referencia por si hubiera que montarla de nuevo.
 2. **Authentication → URL Configuration:** en *Site URL* pon el dominio de la web (o la URL de Vercel) y añade `https://TU-DOMINIO/admin/` en *Redirect URLs*. Así los emails de confirmación y de recuperar contraseña te devuelven al panel.
 3. **Crear tu acceso:** entra en `https://TU-DOMINIO/admin/`. Mientras no exista ningún administrador aparece **«Crear cuenta de administrador»**: pon tu email y contraseña, confirma el email que te llega y entra. Esa primera cuenta queda como administradora y la opción desaparece. Hazlo nada más publicar la web.
    - Alternativa manual: crear el usuario en *Authentication → Users* y ejecutar `supabase/03_crear_admin.sql` con tu email.
