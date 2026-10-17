@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Panel · Fujiyama</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/assets/img/icon-32.png" sizes="32x32">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho+B1:wght@700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/styles.css">
+  <link rel="stylesheet" href="/assets/css/admin.css">
+</head>
+<body class="admin">
+  <header class="a-top">
+    <a href="/" class="a-top__logo" title="Ver la web"><img src="/assets/img/logo-fujiyama-alpha-sm.webp" alt="Fujiyama" width="400" height="322"></a>
+    <span class="a-top__title">Panel de administración</span>
+    <div class="a-top__right">
+      <a class="btn btn--sm" href="/" target="_blank" rel="noopener">Ver web</a>
+      <button class="btn btn--sm" id="logout" hidden>Salir</button>
+    </div>
+  </header>
+
+  <main class="a-main">
+    <!-- Supabase sin configurar -->
+    <section id="v-setup" class="a-card a-narrow" hidden>
+      <h1 class="a-h1">Configuración pendiente</h1>
+      <p>El panel necesita una cuenta de <strong>Supabase</strong> (gratuita) para guardar fotos, vídeos, la carta y los mensajes. Todavía no está conectada, así que <strong>no se puede subir nada</strong>.</p>
+      <ol class="a-steps">
+        <li>Crea un proyecto en <a href="https://supabase.com" target="_blank" rel="noopener">supabase.com</a>.</li>
+        <li>En <em>SQL Editor</em>, ejecuta <code>supabase/01_schema.sql</code> (y opcionalmente <code>02_carta_inicial.sql</code>).</li>
+        <li>En <em>Authentication → Users</em>, crea tu usuario y ejecuta <code>supabase/03_crear_admin.sql</code> con tu email.</li>
+        <li>Copia la <em>Project URL</em> y la <em>anon public key</em> (Project Settings → API) en <code>assets/js/config.js</code> y vuelve a publicar.</li>
+      </ol>
+      <p class="a-muted">Los pasos detallados están en el README del proyecto.</p>
+    </section>
+
+    <!-- Acceso -->
+    <section id="v-login" class="a-card a-narrow" hidden>
+      <h1 class="a-h1">Acceso privado</h1>
+      <form id="login-form" class="form-grid">
+        <div class="field"><label for="l-email">Email</label><input id="l-email" type="email" required autocomplete="username"></div>
+        <div class="field"><label for="l-pass">Contraseña</label><input id="l-pass" type="password" required autocomplete="current-password"></div>
+        <div class="form-status" id="login-status"></div>
+        <button class="btn btn--red" type="submit">Entrar</button>
+        <button class="a-link" type="button" id="forgot">He olvidado mi contraseña</button>
+      </form>
+    </section>
+
+    <!-- Nueva contraseña (tras enlace de recuperación) -->
+    <section id="v-recover" class="a-card a-narrow" hidden>
+      <h1 class="a-h1">Nueva contraseña</h1>
+      <form id="recover-form" class="form-grid">
+        <div class="field"><label for="r-pass">Nueva contraseña (mín. 8 caracteres)</label><input id="r-pass" type="password" minlength="8" required autocomplete="new-password"></div>
+        <div class="form-status" id="recover-status"></div>
+        <button class="btn btn--red" type="submit">Guardar contraseña</button>
+      </form>
+    </section>
+
+    <!-- Panel -->
+    <section id="v-app" hidden>
+      <nav class="a-tabs" role="tablist">
+        <button class="is-active" data-tab="gallery" role="tab">Galería</button>
+        <button data-tab="carta" role="tab">Carta</button>
+        <button data-tab="settings" role="tab">Datos del restaurante</button>
+        <button data-tab="messages" role="tab">Mensajes <span class="a-badge" id="msg-badge" hidden></span></button>
+      </nav>
+
+      <!-- GALERÍA -->
+      <div class="a-panel is-active" data-panel="gallery">
+        <div class="a-card">
+          <h2 class="a-h2">Añadir fotos y vídeos</h2>
+          <label class="a-drop" id="drop">
+            <input type="file" id="file-input" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,video/mp4,video/webm,video/quicktime" multiple>
+            <strong>Pulsa para elegir archivos</strong>
+            <span>o arrástralos aquí · Fotos JPG/PNG/WebP · Vídeos MP4 (máx. 50 MB)</span>
+          </label>
+          <p class="a-muted a-small">Las fotos se comprimen automáticamente y se crea una miniatura. De cada vídeo se genera una portada.</p>
+          <div id="queue" class="a-queue"></div>
+          <div class="a-row" id="queue-actions" hidden>
+            <button class="btn btn--red" id="upload-all">Publicar</button>
+            <button class="btn" id="clear-queue">Cancelar</button>
+          </div>
+        </div>
+
+        <div class="a-card">
+          <div class="a-row a-row--between">
+            <h2 class="a-h2">Publicado en la galería <span class="a-muted" id="g-count"></span></h2>
+            <span class="a-muted a-small">El primero de la lista es el primero que se ve en la web.</span>
+          </div>
+          <div id="g-list" class="a-glist"></div>
+        </div>
+      </div>
+
+      <!-- CARTA -->
+      <div class="a-panel" data-panel="carta">
+        <div class="a-card">
+          <div class="a-row a-row--between">
+            <h2 class="a-h2">Carta</h2>
+            <div class="a-row">
+              <button class="btn btn--sm" id="add-cat">+ Sección</button>
+            </div>
+          </div>
+          <p class="a-muted a-small">Los cambios se publican al momento. Precio vacío = sin precio. Usa los interruptores para ocultar sin borrar.</p>
+          <div id="c-empty" class="a-empty" hidden>
+            <p>La carta todavía no está en la base de datos.</p>
+            <button class="btn btn--red" id="import-carta">Importar la carta inicial (transcrita de la carta original)</button>
+          </div>
+          <div id="c-list"></div>
+        </div>
+      </div>
+
+      <!-- DATOS -->
+      <div class="a-panel" data-panel="settings">
+        <form class="a-card" id="settings-form">
+          <h2 class="a-h2">Portada</h2>
+          <div class="form-grid">
+            <div class="field"><label>Título de portada</label><input name="heroSubtitle" maxlength="90"></div>
+            <div class="field"><label>Frase de presentación</label><input name="heroText" maxlength="200"></div>
+          </div>
+
+          <h2 class="a-h2">Sobre nosotros</h2>
+          <div class="form-grid">
+            <div class="field"><label>Título</label><input name="aboutTitle" maxlength="80" placeholder="Sobre Fujiyama"></div>
+            <div class="field"><label>Texto (deja una línea en blanco entre párrafos)</label><textarea name="aboutText" rows="7" maxlength="4000" placeholder="Si lo dejas vacío, la web muestra un texto provisional marcado como tal."></textarea></div>
+            <div class="field"><label>Foto de la sección</label>
+              <div class="a-row"><img id="about-prev" class="a-thumb" alt="" hidden><input type="file" id="about-file" accept="image/*"><button type="button" class="btn btn--sm" id="about-clear" hidden>Quitar</button></div>
+              <input type="hidden" name="aboutImage">
+            </div>
+          </div>
+
+          <h2 class="a-h2">Contacto y reservas</h2>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label>Teléfono</label><input name="phone" maxlength="40" placeholder="922 000 000"></div>
+            <div class="field"><label>WhatsApp (si lo tenéis)</label><input name="whatsapp" maxlength="40" placeholder="600 000 000"></div>
+            <div class="field"><label>Email público</label><input name="email" type="email" maxlength="120"></div>
+            <div class="field"><label>Email para avisos de formularios</label><input name="notifyEmail" type="email" maxlength="120" placeholder="Recibe cada reserva/consulta por email"></div>
+            <div class="field"><label>Dirección</label><input name="address" maxlength="200"></div>
+            <div class="field"><label>Búsqueda en Google Maps (opcional)</label><input name="mapsQuery" maxlength="200" placeholder="Nombre + dirección exacta en Maps"></div>
+            <div class="field" style="grid-column:1/-1"><label>Enlace a sistema de reservas externo (opcional)</label><input name="reservationUrl" type="url" maxlength="300" placeholder="https://… (CoverManager, TheFork, etc.)"></div>
+          </div>
+
+          <h2 class="a-h2">Horario</h2>
+          <div id="hours" class="a-hours"></div>
+          <div class="a-row"><button type="button" class="btn btn--sm" id="add-hour">+ Añadir fila</button></div>
+          <div class="field" style="margin-top:14px"><label>Nota de horario (opcional)</label><input name="hoursNote" maxlength="200" placeholder="Ej.: cerrado por vacaciones del 1 al 15"></div>
+
+          <h2 class="a-h2">Redes sociales</h2>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label>Instagram (URL)</label><input name="social.instagram" type="url"></div>
+            <div class="field"><label>Facebook (URL)</label><input name="social.facebook" type="url"></div>
+            <div class="field"><label>TikTok (URL)</label><input name="social.tiktok" type="url"></div>
+            <div class="field"><label>Tripadvisor (URL)</label><input name="social.tripadvisor" type="url"></div>
+            <div class="field"><label>Google (ficha de empresa)</label><input name="social.google" type="url"></div>
+          </div>
+
+          <h2 class="a-h2">Datos legales (aviso legal y privacidad)</h2>
+          <div class="form-grid form-grid--2">
+            <div class="field"><label>Titular / razón social</label><input name="legal.owner"></div>
+            <div class="field"><label>NIF / CIF</label><input name="legal.nif"></div>
+            <div class="field"><label>Domicilio social</label><input name="legal.address"></div>
+            <div class="field"><label>Email de contacto legal</label><input name="legal.email" type="email"></div>
+          </div>
+
+          <div class="a-save">
+            <div class="form-status" id="settings-status"></div>
+            <button class="btn btn--red" type="submit">Guardar cambios</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- MENSAJES -->
+      <div class="a-panel" data-panel="messages">
+        <div class="a-card">
+          <div class="a-row a-row--between">
+            <h2 class="a-h2">Reservas y consultas</h2>
+            <div class="a-row">
+              <select id="m-filter" class="a-select">
+                <option value="all">Todos</option><option value="reserva">Reservas</option><option value="consulta">Consultas</option><option value="nuevo">Sin ver</option>
+              </select>
+              <button class="btn btn--sm" id="m-refresh">Actualizar</button>
+            </div>
+          </div>
+          <div id="m-list"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="a-dialog" id="dlg">
+    <form method="dialog" id="dlg-form" class="form-grid">
+      <h2 class="a-h2" id="dlg-title"></h2>
+      <div id="dlg-body" class="form-grid"></div>
+      <div class="form-status" id="dlg-status"></div>
+      <div class="a-row a-row--end">
+        <button class="btn btn--sm" value="cancel" formnovalidate>Cancelar</button>
+        <button class="btn btn--sm btn--red" value="ok" id="dlg-ok">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+  <div class="a-toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/assets/js/config.js"></script>
+  <script src="/assets/js/carta-data.js"></script>
+  <script type="module" src="/assets/js/admin.js"></script>
+</body>
+</html>
