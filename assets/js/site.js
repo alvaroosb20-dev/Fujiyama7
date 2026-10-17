@@ -117,9 +117,12 @@ lb.stage.addEventListener("touchend", e => {
 /* Carta                                                               */
 /* ------------------------------------------------------------------ */
 const CARTA_PAGES = [
-  ["00-menu-japones", "Menú japonés"], ["01-postres", "Postres y alérgenos"], ["02-te-sake", "Té japonés y sake"],
-  ["03-cervezas-refrescos", "Cervezas, refrescos y café"], ["04-destilados", "Destilados"],
-  ["05-licores-espumosos-blancos", "Licores, espumosos y vinos blancos"], ["06-vinos-afrutados-rosados-tintos", "Vinos afrutados, rosados y tintos"]
+  ["01-menu-japones", "Menú japonés"], ["02-entrantes-tempura-usuzukuri", "Entrantes, tempura y usuzukuri"],
+  ["03-sashimi-tartar-inari-temaki", "Sashimi, tartar, inari y temaki"], ["04-nigiris-gunkan", "Nigiris y gunkan"],
+  ["05-hosomakis-uramakis", "Hosomakis y uramakis"], ["06-futomakis-gohan", "Futomakis y gohan"],
+  ["07-postres", "Postres y alérgenos"], ["08-te-sake", "Té japonés y sake"],
+  ["09-cervezas-refrescos", "Cervezas, refrescos y café"], ["10-destilados", "Destilados"],
+  ["11-licores-espumosos-blancos", "Licores, espumosos y vinos blancos"], ["12-vinos-afrutados-rosados-tintos", "Vinos afrutados, rosados y tintos"]
 ].map(([f, t]) => ({ type: "image", src: `/assets/carta/${f}.webp`, title: `Carta original · ${t}`, alt: `Página de la carta de Fujiyama: ${t}` }));
 
 function renderCartaPages() {

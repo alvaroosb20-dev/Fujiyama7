@@ -5,7 +5,7 @@ window.FUJI_CARTA = [
  {
   "slug": "menu-japones",
   "name": "Menú japonés",
-  "group": "Cocina",
+  "group": "Entrantes",
   "note": "Menú completo · 70 €",
   "items": [
    {
@@ -53,16 +53,744 @@ window.FUJI_CARTA = [
   ]
  },
  {
-  "slug": "platos",
-  "name": "Platos de cocina",
-  "group": "Cocina",
-  "note": "PENDIENTE: faltan por añadir los platos nº 1–84 de la carta original.",
-  "items": []
+  "slug": "entrantes",
+  "name": "Entrantes",
+  "group": "Entrantes",
+  "note": "",
+  "items": [
+   {
+    "code": "01",
+    "name": "Edamame",
+    "price": 5.0,
+    "description": "Habas de soja salteadas con shichimi y especias.",
+    "origin": ""
+   },
+   {
+    "code": "02",
+    "name": "Sopa miso",
+    "price": 5.0,
+    "description": "Alga kombu y tofu.",
+    "origin": ""
+   },
+   {
+    "code": "03",
+    "name": "Tataki de atún",
+    "price": 16.0,
+    "description": "Lomo de atún rojo marcado al estilo tataki, envuelto en una crujiente costra de sésamo blanco y negro. Acompañado de salsa ponzu casera.",
+    "origin": ""
+   },
+   {
+    "code": "04",
+    "name": "Namaharumaki",
+    "price": 12.0,
+    "description": "Verduras, langostino y surimi envuelto en papel de arroz.",
+    "origin": ""
+   },
+   {
+    "code": "05",
+    "name": "Gyozas de verduras (4 piezas)",
+    "price": 8.0,
+    "description": "Empanadillas rellenas.",
+    "origin": ""
+   },
+   {
+    "code": "05",
+    "name": "Gyozas de pollo (4 piezas)",
+    "price": 8.0,
+    "description": "Empanadillas rellenas.",
+    "origin": ""
+   },
+   {
+    "code": "05",
+    "name": "Gyozas de pato (4 piezas)",
+    "price": 8.0,
+    "description": "Empanadillas rellenas.",
+    "origin": ""
+   },
+   {
+    "code": "06",
+    "name": "Takoyakis",
+    "price": 9.0,
+    "description": "Bolas de pulpo frito con katsuobushi.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "tempura",
+  "name": "Tempura",
+  "group": "Entrantes",
+  "note": "",
+  "items": [
+   {
+    "code": "07",
+    "name": "Tempura de verduras",
+    "price": 14.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "08",
+    "name": "Tempura de langostinos",
+    "price": 18.0,
+    "description": "",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "usuzukuri",
+  "name": "Usuzukuri",
+  "group": "Entrantes",
+  "note": "8 uds.",
+  "items": [
+   {
+    "code": "09",
+    "name": "Usuzukuri hotate kombu miso",
+    "price": 18.0,
+    "description": "Finísimas láminas de vieira fresca, bañadas en salsa ponzu con tartufata. Coronado con virutas de katsuobushi y cebollino fresco.",
+    "origin": ""
+   },
+   {
+    "code": "10",
+    "name": "Lubina salvaje",
+    "price": 17.5,
+    "description": "Finísimas láminas de lubina fresca, bañadas en salsa ponzu con tartufata. Coronado con virutas de katsuobushi y cebollino fresco.",
+    "origin": ""
+   },
+   {
+    "code": "11",
+    "name": "Usuzukuri a la trufa",
+    "price": 18.5,
+    "description": "Finísimas láminas de pez blanco bañadas en salsa ponzu, con tartufata, cebollino y teriyaki.",
+    "origin": ""
+   },
+   {
+    "code": "12",
+    "name": "Usuzukuri medregal",
+    "price": 17.5,
+    "description": "Finísimas láminas de medregal, bañadas en salsa ponzu, kisami wasabi y esferificaciones de esturión. (Según disponibilidad)",
+    "origin": ""
+   },
+   {
+    "code": "13",
+    "name": "Usuzukuri de akami",
+    "price": 19.0,
+    "description": "Finísimas láminas de atún, bañadas en salsa ponzu y kisami wasabi.",
+    "origin": ""
+   },
+   {
+    "code": "14",
+    "name": "Usuzukuri de salmón",
+    "price": 17.5,
+    "description": "Finísimas láminas, sobre una base de salsa de mango, ponzu, umeboshi, shichimi togarashi y salsa antigua.",
+    "origin": ""
+   },
+   {
+    "code": "15",
+    "name": "Usuzukuri carabinero",
+    "price": null,
+    "description": "Finísimas láminas de carabinero, con aceite de oliva virgen extra, tartufata y huevas de pescado. (Según disponibilidad · consultar precio)",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "tartar",
+  "name": "Tartar",
+  "group": "Entrantes",
+  "note": "",
+  "items": [
+   {
+    "code": "23",
+    "name": "Tartar de atún",
+    "price": 19.5,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "",
+    "name": "Helado de wasabi (para el tartar)",
+    "price": 0.5,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "24",
+    "name": "Tartar de salmón",
+    "price": 18.5,
+    "description": "",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "sashimi",
+  "name": "Sashimi",
+  "group": "Sashimi y nigiri",
+  "note": "Preguntar por disponibilidad, según temporada · 6 uds.",
+  "items": [
+   {
+    "code": "16",
+    "name": "Salmón",
+    "price": 17.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "17",
+    "name": "Atún",
+    "price": 18.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "18",
+    "name": "Pescado blanco",
+    "price": 17.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "19",
+    "name": "Medregal",
+    "price": 18.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "20",
+    "name": "Toro (4 uds.)",
+    "price": 17.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "21",
+    "name": "Moriawase (12 uds.)",
+    "price": 25.0,
+    "description": "Pescados variados a elección del chef.",
+    "origin": ""
+   },
+   {
+    "code": "22",
+    "name": "Moriawase Delux (27 uds.)",
+    "price": 48.0,
+    "description": "Pescados variados a elección del chef.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "nigiris-fuji",
+  "name": "Nigiris Fuji",
+  "group": "Sashimi y nigiri",
+  "note": "Preguntar por disponibilidad, según temporada · 2 uds.",
+  "items": [
+   {
+    "code": "33",
+    "name": "San Francisco",
+    "price": 9.0,
+    "description": "Salmón, salsa, kimuchi flambeado con peta crispy y huevas de trucha.",
+    "origin": ""
+   },
+   {
+    "code": "34",
+    "name": "Sake",
+    "price": 7.0,
+    "description": "Salmón, con topping de oroshi, aceite de humo y ralladura de lima.",
+    "origin": ""
+   },
+   {
+    "code": "35",
+    "name": "Akami (atún)",
+    "price": 8.0,
+    "description": "Esferificaciones de esturión con wasabi kisame.",
+    "origin": ""
+   },
+   {
+    "code": "36",
+    "name": "Suzuki (lubina)",
+    "price": 7.5,
+    "description": "Ponzu, ralladura de limón y momiji oroshi.",
+    "origin": ""
+   },
+   {
+    "code": "37",
+    "name": "Butter fish",
+    "price": 8.5,
+    "description": "Flambeado con soja antigua, topping de cebolla kabayaki y trufa.",
+    "origin": ""
+   },
+   {
+    "code": "38",
+    "name": "Ebi",
+    "price": 6.0,
+    "description": "Langostino con soja antigua y moromi.",
+    "origin": ""
+   },
+   {
+    "code": "39",
+    "name": "Hotategai",
+    "price": 8.5,
+    "description": "Nigiri de vieiras flambeadas con soja antigua.",
+    "origin": ""
+   },
+   {
+    "code": "40",
+    "name": "Toro",
+    "price": 10.0,
+    "description": "Con soja antigua, aceite de humo y punto de umeboshi.",
+    "origin": ""
+   },
+   {
+    "code": "41",
+    "name": "Carne vacuno de huevo de codorniz",
+    "price": 8.5,
+    "description": "Sésamo y teriyaki.",
+    "origin": ""
+   },
+   {
+    "code": "42",
+    "name": "Medregal",
+    "price": 7.5,
+    "description": "Medregal con soja especiada y cebolla kabayaki. (Según disponibilidad)",
+    "origin": ""
+   },
+   {
+    "code": "43",
+    "name": "Unagi",
+    "price": 7.5,
+    "description": "Anguila con salsa tare, aguacate y sésamo.",
+    "origin": ""
+   },
+   {
+    "code": "44",
+    "name": "Nikiri",
+    "price": 7.5,
+    "description": "Huevo de codorniz con trufa.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "gunkan",
+  "name": "Gunkan",
+  "group": "Sashimi y nigiri",
+  "note": "2 uds.",
+  "items": [
+   {
+    "code": "45",
+    "name": "Tobiko",
+    "price": 6.75,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "46",
+    "name": "Ikura",
+    "price": 10.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "47",
+    "name": "Sadayako",
+    "price": 12.0,
+    "description": "",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "inari",
+  "name": "Inari",
+  "group": "Sashimi y nigiri",
+  "note": "1 ud.",
+  "items": [
+   {
+    "code": "25",
+    "name": "Wakame",
+    "price": 3.5,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "26",
+    "name": "Chirashi",
+    "price": 4.5,
+    "description": "Mezcla de pescado variado, macerado en salsa ponzu, cebollino, cebolla, tobiko y teriyaki.",
+    "origin": ""
+   },
+   {
+    "code": "27",
+    "name": "Mineko",
+    "price": 6.0,
+    "description": "Langostino tempurizado picado finamente, macerado en salsa kimuchi, cebolla, cebollino, tobiko, decorado con salsa de mango y teriyaki.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "temaki",
+  "name": "Temaki",
+  "group": "Sashimi y nigiri",
+  "note": "1 ud.",
+  "items": [
+   {
+    "code": "28",
+    "name": "Tartar de atún o salmón",
+    "price": 8.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "29",
+    "name": "Maguro",
+    "price": 7.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "30",
+    "name": "Sake",
+    "price": 7.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "31",
+    "name": "Ebi",
+    "price": 7.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "32",
+    "name": "Unagi",
+    "price": 7.0,
+    "description": "",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "hosomakis",
+  "name": "Hosomakis",
+  "group": "Makis",
+  "note": "6 uds.",
+  "items": [
+   {
+    "code": "48",
+    "name": "Pepino",
+    "price": 4.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "49",
+    "name": "Aguacate",
+    "price": 5.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "50",
+    "name": "Espárragos",
+    "price": 5.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "51",
+    "name": "Unagi",
+    "price": 7.5,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "52",
+    "name": "Salmón",
+    "price": 8.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "53",
+    "name": "Maguro atún",
+    "price": 8.0,
+    "description": "",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "uramakis",
+  "name": "Uramakis",
+  "group": "Makis",
+  "note": "4 uds.",
+  "items": [
+   {
+    "code": "54",
+    "name": "Crunch roll",
+    "price": 8.0,
+    "description": "Salmón, aguacate, cebolla frita, queso crema y salsa kimuchi.",
+    "origin": ""
+   },
+   {
+    "code": "55",
+    "name": "California roll",
+    "price": 8.0,
+    "description": "Aguacate, langostinos, queso crema y tobiko.",
+    "origin": ""
+   },
+   {
+    "code": "56",
+    "name": "Vegan roll",
+    "price": 10.0,
+    "description": "Aguacate, kampyo, daikon, pepino y cobertura de sésamo.",
+    "origin": ""
+   },
+   {
+    "code": "57",
+    "name": "Uramaki dragón",
+    "price": 8.0,
+    "description": "Anguila ahumada, cubierta de aguacate y gambas en tempura.",
+    "origin": ""
+   },
+   {
+    "code": "58",
+    "name": "Suzuki roll",
+    "price": 9.5,
+    "description": "Aguacate, langostino en tempura, cubierta de lubina, salsa ponzu y topping de trufa.",
+    "origin": ""
+   },
+   {
+    "code": "59",
+    "name": "Matsuri Miyama",
+    "price": 10.0,
+    "description": "Pepino y aguacate envuelto en arroz y masago arare, coronado con un tartar de atún fresco.",
+    "origin": ""
+   },
+   {
+    "code": "60",
+    "name": "San Francisco roll",
+    "price": 11.5,
+    "description": "Langostino tempurizado y aguacate, envuelto en salmón flambeado con salsa kimuchi y peta crispy.",
+    "origin": ""
+   },
+   {
+    "code": "61",
+    "name": "Akami roll",
+    "price": 9.5,
+    "description": "Queso fresco, aguacate y surimi, envuelto en atún con aliño de algas y tobiko.",
+    "origin": ""
+   },
+   {
+    "code": "62",
+    "name": "Butter fish",
+    "price": 10.0,
+    "description": "Langostino tempurizado, aguacate envuelto en pez mantequilla con cebolla kabayaki y trufa.",
+    "origin": ""
+   },
+   {
+    "code": "63",
+    "name": "Uramaki acevichado",
+    "price": 10.0,
+    "description": "Pez blanco, cebolla roja, cilantro, envuelto en frutos secos y batata con una salsa casera de ceviche.",
+    "origin": ""
+   },
+   {
+    "code": "64",
+    "name": "Hyoko",
+    "price": 9.5,
+    "description": "Takuan, queso fresco y aguacate envuelto en arroz y cebolla frita, coronado con pollo tempurizado finamente triturado mezclado con salsa kimuchi.",
+    "origin": ""
+   },
+   {
+    "code": "65",
+    "name": "Carabinero roll",
+    "price": null,
+    "description": "Carabinero en tempura con aguacate, espárrago y masago arare. Precio por temporada.",
+    "origin": ""
+   },
+   {
+    "code": "66",
+    "name": "Caribe",
+    "price": 10.5,
+    "description": "Queso fresco, espárrago y salmón envuelto en plátano macho flameado con azúcar moreno y teriyaki.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "futomakis",
+  "name": "Futomakis",
+  "group": "Makis",
+  "note": "8 uds.",
+  "items": [
+   {
+    "code": "67",
+    "name": "Edo",
+    "price": 19.0,
+    "description": "Aguacate, setas shiitake, takuan, kampyo, salmón, atún y tamagoyaki.",
+    "origin": ""
+   },
+   {
+    "code": "68",
+    "name": "Kani (soft crab)",
+    "price": 23.0,
+    "description": "Cangrejo de concha blanda, inari, pepino, sriracha, espárrago, envuelto de masago arare, teriyaki e ito togarashi.",
+    "origin": ""
+   },
+   {
+    "code": "69",
+    "name": "Inazuma",
+    "price": 18.0,
+    "description": "Salmón, atún, negi (cebolleta) y fermento de arroz.",
+    "origin": ""
+   },
+   {
+    "code": "70",
+    "name": "Blast",
+    "price": 19.0,
+    "description": "Langostino tempurizado, pepino, daikon y coronado con tartar de atún con jalapeño.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "futomakis-tempurizado",
+  "name": "Futomakis tempurizados",
+  "group": "Makis",
+  "note": "4 uds.",
+  "items": [
+   {
+    "code": "71",
+    "name": "Fuji roll",
+    "price": 9.5,
+    "description": "Aguacate, queso tempurizado y mix de pollo tempurizado con salsa kimuchi.",
+    "origin": ""
+   },
+   {
+    "code": "72",
+    "name": "Sake roll",
+    "price": 10.5,
+    "description": "Salmón, surimi, queso fresco, atún, aguacate y cebolleta.",
+    "origin": ""
+   },
+   {
+    "code": "73",
+    "name": "Explosión roll",
+    "price": 11.0,
+    "description": "Aguacate, pepino, coronado con tartar de salmón con kimuchi y sriracha.",
+    "origin": ""
+   },
+   {
+    "code": "74",
+    "name": "Langostino futomaki",
+    "price": 9.0,
+    "description": "Langostinos fritos con aguacate, huevo hilado y kimuchi.",
+    "origin": ""
+   },
+   {
+    "code": "75",
+    "name": "Futomaki unagi tempurizado",
+    "price": 10.0,
+    "description": "Unagi ligeramente frito con langostino, aguacate y tobiko.",
+    "origin": ""
+   }
+  ]
+ },
+ {
+  "slug": "gohan",
+  "name": "Gohan",
+  "group": "Gohan y postres",
+  "note": "",
+  "items": [
+   {
+    "code": "76",
+    "name": "Gohan",
+    "price": 4.0,
+    "description": "Arroz blanco.",
+    "origin": ""
+   },
+   {
+    "code": "77",
+    "name": "Gohan sushi",
+    "price": 5.0,
+    "description": "Arroz sushi.",
+    "origin": ""
+   },
+   {
+    "code": "78",
+    "name": "Kaisen yakimeshi",
+    "price": 13.0,
+    "description": "Arroz salteado con marisco.",
+    "origin": ""
+   },
+   {
+    "code": "79",
+    "name": "Yakiudon",
+    "price": 14.0,
+    "description": "Pasta salteada al wok, con pollo, verduras frescas y salsa japonesa.",
+    "origin": ""
+   },
+   {
+    "code": "80",
+    "name": "Okonomiyaki",
+    "price": 15.0,
+    "description": "Tortilla japonesa, con verduras frescas, marisco, coronado con salsa mayonesa, salsa okonomiyaki, teriyaki y katsuobushi.",
+    "origin": ""
+   },
+   {
+    "code": "81",
+    "name": "Ramen de marisco",
+    "price": 15.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "81",
+    "name": "Ramen de pollo",
+    "price": 14.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "81",
+    "name": "Ramen de solomillo",
+    "price": 16.0,
+    "description": "",
+    "origin": ""
+   },
+   {
+    "code": "82",
+    "name": "Pollo teriyaki",
+    "price": 16.0,
+    "description": "Gohan de base con pollo salteado con verduras y salsa teriyaki.",
+    "origin": ""
+   },
+   {
+    "code": "83",
+    "name": "Solomillo japonés con salsa de setas shiitake",
+    "price": 21.0,
+    "description": "Solomillo cocinado al teppanyaki con reducción de salsa shiitake.",
+    "origin": ""
+   },
+   {
+    "code": "84",
+    "name": "Pollo Fujiyama",
+    "price": 16.0,
+    "description": "Pollo estilo japonés tempurizado, acompañado de un gohan.",
+    "origin": ""
+   }
+  ]
  },
  {
   "slug": "postres",
   "name": "Postres",
-  "group": "Cocina",
+  "group": "Gohan y postres",
   "note": "",
   "items": [
    {

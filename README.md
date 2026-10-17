@@ -67,10 +67,10 @@ window.FUJI_CONFIG = {
 - **Editar** permite cambiar textos o *sustituir* el archivo. **Visible en la web** oculta sin borrar. **Eliminar** borra también los archivos.
 
 **Carta**
-- Secciones agrupadas en pestañas (Cocina, Té y sake, Cervezas y refrescos, Vinos y espumosos, Destilados y licores).
+- Secciones agrupadas en pestañas (Entrantes, Sashimi y nigiri, Makis, Gohan y postres, Té y sake, Cervezas y refrescos, Vinos y espumosos, Destilados y licores).
 - Editar nombre, número, precio (vacío = sin precio), etiqueta (D.O., «Con teína»…), descripción y foto del plato; añadir, ocultar, reordenar o eliminar.
 - La sección **Menú japonés** se muestra destacada arriba; su precio se lee de la nota de la sección («Menú completo · 70 €»).
-- Una sección sin productos pero con nota se muestra como aviso (así está ahora «Platos de cocina»).
+- Una sección sin productos pero con nota se muestra como aviso.
 - Si cambias la carta en papel, actualiza también las imágenes de `assets/carta/` y el PDF (botones «Ver carta original» y «Descargar carta»).
 
 **Datos del restaurante**: título y frase de portada, texto y foto de *Sobre nosotros*, teléfono, WhatsApp, email, dirección (activa el mapa y «Cómo llegar»), horario, enlace a un sistema de reservas externo, redes sociales y datos legales. Lo que se deja vacío aparece en la web como «pendiente de configurar» o no se muestra (redes sociales, WhatsApp).
@@ -89,11 +89,11 @@ Hay dos opciones y pueden convivir:
 
 ## 7. Pendiente de completar
 
-- **Platos de cocina nº 1–84**: no estaban en las capturas recibidas. Se añaden desde *Carta* o se pasan las páginas para transcribirlas.
+- **Verificar en la carta**: precios de los uramakis 55–57 (en la captura los precios están desalineados; se ha leído 55 = 8,00 €, 56 = 10,00 €, 57 = 8,00 €) y el precio del nº 15 Usuzukuri carabinero, que no aparece en la captura (se muestra sin precio).
 - Teléfono, WhatsApp, dirección, horario, email, redes sociales.
 - Texto y foto de *Sobre nosotros* (ahora hay un texto provisional marcado como tal).
 - Datos legales (titular, NIF, domicilio) y revisión de los textos legales.
-- Iconos de alérgenos por plato: en la carta original aparecen junto a los postres, pero son demasiado pequeños en la captura para leerlos con seguridad, por eso no se han transcrito. La web muestra la declaración general de alérgenos.
+- Iconos de alérgenos por plato: en la carta original aparecen junto a cada plato, pero son demasiado pequeños en la captura para leerlos con seguridad, por eso no se han transcrito. La web muestra la declaración general de alérgenos.
 - Más fotos y vídeos propios desde el panel (ahora hay 3 fotos iniciales).
 
 ## 8. Notas técnicas

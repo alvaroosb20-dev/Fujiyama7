@@ -364,7 +364,7 @@ $("#upload-all").addEventListener("click", async () => {
 /* CARTA                                                               */
 /* ================================================================== */
 let cats = [], items = [];
-const GROUPS = ["Cocina", "Té y sake", "Cervezas y refrescos", "Vinos y espumosos", "Destilados y licores"];
+const GROUPS = ["Entrantes", "Sashimi y nigiri", "Makis", "Gohan y postres", "Té y sake", "Cervezas y refrescos", "Vinos y espumosos", "Destilados y licores"];
 
 async function loadCartaAdmin() {
   const [c, i] = await Promise.all([
@@ -471,7 +471,7 @@ const slugify = s => s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").re
 async function editCategory(c) {
   await dialog(c ? "Editar sección" : "Nueva sección", [
     { name: "name", label: "Nombre", value: c?.name || "", required: true },
-    { name: "grp", label: "Grupo (pestaña de la carta)", type: "datalist", options: [...new Set([...GROUPS, ...cats.map(x => x.grp)])], value: c?.grp || "Cocina", required: true },
+    { name: "grp", label: "Grupo (pestaña de la carta)", type: "datalist", options: [...new Set([...GROUPS, ...cats.map(x => x.grp)])], value: c?.grp || "Entrantes", required: true },
     { name: "note", label: "Nota (opcional)", value: c?.note || "", placeholder: "Ej.: Menú completo · 70 €" },
     { name: "x", type: "info", label: "Si una sección no tiene productos y tiene nota, la web la muestra como aviso." }
   ], {
