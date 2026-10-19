@@ -9,12 +9,14 @@ export const DEFAULT_LOCATIONS = [
   {
     id: "santa-cruz", name: "Santa Cruz",
     address: "Calle José Murphy, 2, Santa Cruz de Tenerife",
+    bookingUrl: "https://bit.ly/47cqVQ2",
     mapsQuery: "", phone: "", whatsapp: "", hoursNote: "",
     hours: [{ days: "Todos los días", hours: HORARIO }]
   },
   {
     id: "la-laguna", name: "La Laguna",
     address: "Plaza de la Concepción, 12, San Cristóbal de La Laguna",
+    bookingUrl: "https://bit.ly/47eLyuQ",
     mapsQuery: "", phone: "", whatsapp: "", hoursNote: "",
     hours: [
       { days: "Lunes y martes", hours: HORARIO },
@@ -49,8 +51,11 @@ export async function sb() {
   return _sb;
 }
 
+/* Enlace de reservas: si un local guardado antes no tiene el campo, se usa el de por defecto */
+const defaultBooking = l => DEFAULT_LOCATIONS.find(d => d.id === l.id || d.name === l.name)?.bookingUrl || "";
 const cleanLoc = (l, i) => ({
   id: l.id || "local-" + (i + 1), name: l.name || `Local ${i + 1}`, address: l.address || "", mapsQuery: l.mapsQuery || "",
+  bookingUrl: typeof l.bookingUrl === "string" ? l.bookingUrl.trim() : defaultBooking(l),
   phone: l.phone || "", whatsapp: l.whatsapp || "", hoursNote: l.hoursNote || "",
   hours: Array.isArray(l.hours) ? l.hours.filter(h => h && (h.days || h.hours)) : []
 });

@@ -303,7 +303,8 @@ function applySettings(s) {
         : `<p style="margin-top:8px">${pend("Horario")}</p>`}
       ${l.hoursNote ? `<p style="font-size:14px;color:var(--muted);margin-top:8px">${esc(l.hoursNote)}</p>` : ""}
       <div class="info__actions">
-        ${l.phone ? `<a class="btn btn--sm btn--red" href="${telHref(l.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>` : ""}
+        ${l.bookingUrl ? `<a class="btn btn--sm btn--red" href="${esc(l.bookingUrl)}" target="_blank" rel="noopener"><svg><use href="#i-cal"/></svg>Reservar</a>` : ""}
+        ${l.phone ? `<a class="btn btn--sm" href="${telHref(l.phone)}"><svg><use href="#i-phone"/></svg>Llamar</a>` : ""}
         ${l.whatsapp ? `<a class="btn btn--sm" href="${waHref(l.whatsapp, `Hola Fujiyama ${l.name}`)}" target="_blank" rel="noopener"><svg><use href="#i-wa"/></svg>WhatsApp</a>` : ""}
         ${l.address ? `<a class="btn btn--sm" target="_blank" rel="noopener" href="${mapsUrl(l)}">Cómo llegar</a><button class="btn btn--sm" type="button" data-map="${i}"><svg><use href="#i-pin"/></svg>Ver mapa</button>` : ""}
       </div>`;
@@ -328,6 +329,9 @@ function applySettings(s) {
     showMap(+b.dataset.map);
     if (!map.contains(b)) map.scrollIntoView({ behavior: "smooth", block: "center" });
   });
+
+  // Reservas: un enlace por restaurante; con varios, se elige en una ventana
+  setupBooking(s.locations.filter(l => l.bookingUrl));
 
   // Locales en la portada
   $("#hero-locs").innerHTML = s.locations.map(l => `<span>${esc(l.name)}</span>`).join("");
@@ -369,6 +373,28 @@ function applySettings(s) {
     $("#ld-restaurant").textContent = JSON.stringify({ "@context": "https://schema.org", "@graph": graph });
   } catch {}
 
+}
+function setupBooking(locs) {
+  const triggers = $$("[data-book]");
+  if (!locs.length) { triggers.forEach(b => b.hidden = true); return; }
+  const dlg = $("#book");
+  $("#book-list").innerHTML = locs.map(l => `
+    <a class="book__opt" href="${esc(l.bookingUrl)}" target="_blank" rel="noopener">
+      <span><strong>Fujiyama ${esc(l.name)}</strong>${l.address ? `<small>${esc(l.address)}</small>` : ""}</span>
+      <svg><use href="#i-right"/></svg>
+    </a>`).join("");
+  const close = () => dlg.open && dlg.close();
+  document.addEventListener("click", e => {
+    const t = e.target.closest("[data-book]");
+    if (t) {
+      e.preventDefault();
+      setMenu(false);
+      if (locs.length === 1) window.open(locs[0].bookingUrl, "_blank", "noopener");
+      else if (dlg.showModal) dlg.showModal(); else location.hash = "contacto";
+      return;
+    }
+    if (e.target.closest("[data-book-close]") || e.target === dlg || e.target.closest(".book__opt")) close();
+  });
 }
 const info = (icon, title, body) => `<div class="info"><span class="info__ico"><svg><use href="#${icon}"/></svg></span><div><h3>${title}</h3>${body}</div></div>`;
 

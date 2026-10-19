@@ -587,6 +587,7 @@ function renderLocations(locs) {
         <label>Dirección<input data-l="address" value="${esc(l.address)}"></label>
         <label>Teléfono<input data-l="phone" value="${esc(l.phone)}" placeholder="922 000 000"></label>
         <label>WhatsApp<input data-l="whatsapp" value="${esc(l.whatsapp)}"></label>
+        <label style="grid-column:1/-1">Enlace de reservas<input data-l="bookingUrl" type="url" value="${esc(l.bookingUrl || "")}" placeholder="https://… (vacío = sin botón Reservar)"></label>
         <label style="grid-column:1/-1">Búsqueda en Google Maps (opcional)<input data-l="mapsQuery" value="${esc(l.mapsQuery)}" placeholder="Si el mapa no encuentra bien la dirección"></label>
       </div>
       <div><label style="margin-bottom:6px">Horario</label><div class="a-hours">${(l.hours.length ? l.hours : [{ days: "", hours: "" }]).map(hourRow).join("")}</div>
@@ -600,7 +601,7 @@ function readLocations() {
     const name = v("name") || `Local ${i + 1}`;
     return {
       id: el.dataset.loc || name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-"),
-      name, address: v("address"), phone: v("phone"), whatsapp: v("whatsapp"), mapsQuery: v("mapsQuery"), hoursNote: v("hoursNote"),
+      name, address: v("address"), bookingUrl: v("bookingUrl"), phone: v("phone"), whatsapp: v("whatsapp"), mapsQuery: v("mapsQuery"), hoursNote: v("hoursNote"),
       hours: $$(".a-hour", el).map(r => ({ days: $("[data-h=days]", r).value.trim(), hours: $("[data-h=hours]", r).value.trim() })).filter(h => h.days || h.hours)
     };
   });
@@ -616,7 +617,7 @@ $("#locations").addEventListener("click", e => {
 $("#locations").addEventListener("input", e => {
   if (e.target.dataset.l === "name") e.target.closest(".a-loc").querySelector(".a-loc__head strong").textContent = e.target.value || "Nuevo restaurante";
 });
-$("#add-loc").addEventListener("click", () => renderLocations([...readLocations(), { id: "", name: "", address: "", phone: "", whatsapp: "", mapsQuery: "", hoursNote: "", hours: [] }]));
+$("#add-loc").addEventListener("click", () => renderLocations([...readLocations(), { id: "", name: "", address: "", bookingUrl: "", phone: "", whatsapp: "", mapsQuery: "", hoursNote: "", hours: [] }]));
 
 function aboutPreview() {
   const v = $("#settings-form").aboutImage.value;
